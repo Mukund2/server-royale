@@ -613,11 +613,23 @@ export class PreloadScene extends Phaser.Scene {
     g.fillStyle(0x4a7c59);
     g.fillRect(0, 0, W, H);
 
-    // Alternating grass stripes (Clash Royale style)
-    for (let y = 0; y < H; y += 16) {
-      const stripe = y % 32 === 0;
-      g.fillStyle(stripe ? 0x558c65 : 0x477856);
-      g.fillRect(0, y, W, 16);
+    // Checkerboard grass tiles (Clash Royale style — alternating light/dark squares)
+    const tileSize = 24;
+    for (let ty = 0; ty < H - 100; ty += tileSize) {
+      for (let tx = 0; tx < W; tx += tileSize) {
+        const checker = ((tx / tileSize) + (ty / tileSize)) % 2 === 0;
+        g.fillStyle(checker ? 0x558c65 : 0x4a7c59);
+        g.fillRect(tx, ty, tileSize, tileSize);
+      }
+    }
+
+    // Subtle grass blade marks (tiny angled lines)
+    for (let i = 0; i < 120; i++) {
+      const gx = ((i * 37 + 13) % W);
+      const gy = ((i * 53 + 7) % (H - 100));
+      g.lineStyle(0.5, 0x3d6b4a, 0.2);
+      g.lineBetween(gx, gy, gx + 2, gy - 3);
+      g.lineBetween(gx + 1, gy, gx + 3, gy - 2);
     }
 
     // Subtle grass texture dots
@@ -625,7 +637,7 @@ export class PreloadScene extends Phaser.Scene {
     for (let i = 0; i < 200; i++) {
       const gx = ((i * 37 + 13) % W);
       const gy = ((i * 53 + 7) % (H - 100));
-      g.fillStyle(grassColors[i % grassColors.length], 0.3);
+      g.fillStyle(grassColors[i % grassColors.length], 0.2);
       g.fillCircle(gx, gy, 1 + (i % 2));
     }
 
@@ -699,45 +711,74 @@ export class PreloadScene extends Phaser.Scene {
       g.fillEllipse(rp.x - 1, rp.y - 1, 5, 3);
     }
 
-    // -- River (wider, more detailed) --
+    // -- River (wider, more detailed — Clash Royale style) --
     const riverY = 275;
     const riverH = 38;
 
     // River bed (dark underneath)
-    g.fillStyle(0x1e3a5f, 0.8);
+    g.fillStyle(0x1a3455, 0.9);
     g.fillRect(0, riverY + 2, W, riverH);
 
-    // Main water body
-    g.fillStyle(0x2563eb, 0.75);
+    // Main water body (gradient layers)
+    g.fillStyle(0x1d4ed8, 0.8);
     g.fillRect(0, riverY, W, riverH);
+    g.fillStyle(0x2563eb, 0.6);
+    g.fillRect(0, riverY, W, riverH * 0.7);
+    g.fillStyle(0x3b82f6, 0.4);
+    g.fillRect(0, riverY, W, riverH * 0.4);
 
-    // Water surface layers
-    g.fillStyle(0x3b82f6, 0.5);
-    g.fillRect(0, riverY, W, riverH / 2);
-
-    // Water shimmer waves
-    for (let x = 0; x < W; x += 20) {
-      g.fillStyle(0x60a5fa, 0.35);
-      g.fillEllipse(x + 10, riverY + riverH * 0.35, 16, 5);
-      g.fillStyle(0x93c5fd, 0.2);
-      g.fillEllipse(x + 5, riverY + riverH * 0.65, 14, 4);
+    // Foam wave crests (white wavy lines)
+    g.lineStyle(1.5, 0xffffff, 0.12);
+    for (let x = 0; x < W; x += 3) {
+      const waveY = riverY + 8 + Math.sin(x * 0.08) * 3;
+      g.fillStyle(0xffffff, 0.08);
+      g.fillCircle(x, waveY, 1);
+    }
+    for (let x = 0; x < W; x += 4) {
+      const waveY = riverY + riverH - 10 + Math.sin(x * 0.06 + 2) * 2;
+      g.fillStyle(0xbfdbfe, 0.06);
+      g.fillCircle(x, waveY, 1);
     }
 
-    // Sparkle highlights on water
-    for (let i = 0; i < 12; i++) {
-      const sx = ((i * 37 + 11) % W);
-      const sy = riverY + 5 + ((i * 13) % (riverH - 10));
-      g.fillStyle(0xffffff, 0.25);
-      g.fillCircle(sx, sy, 1.5);
+    // Water shimmer waves (ellipses for depth)
+    for (let x = 0; x < W; x += 18) {
+      g.fillStyle(0x60a5fa, 0.3);
+      g.fillEllipse(x + 10, riverY + riverH * 0.3, 14, 4);
+      g.fillStyle(0x93c5fd, 0.15);
+      g.fillEllipse(x + 5, riverY + riverH * 0.6, 12, 3);
     }
 
-    // River banks (earthy brown with stone edge)
-    g.fillStyle(0x6b5c45);
-    g.fillRect(0, riverY - 4, W, 4);
-    g.fillRect(0, riverY + riverH, W, 4);
-    g.fillStyle(0x8b7a62, 0.6);
-    g.fillRect(0, riverY - 2, W, 2);
-    g.fillRect(0, riverY + riverH + 2, W, 2);
+    // Sparkle highlights (brighter, more scattered)
+    for (let i = 0; i < 15; i++) {
+      const sx = ((i * 29 + 11) % W);
+      const sy = riverY + 4 + ((i * 11) % (riverH - 8));
+      g.fillStyle(0xffffff, 0.3);
+      g.fillCircle(sx, sy, 1);
+      g.fillStyle(0xffffff, 0.15);
+      g.fillCircle(sx + 2, sy + 1, 0.5);
+    }
+
+    // River banks (stone edge with grass overhang)
+    // Top bank
+    g.fillStyle(0x5c4e38);
+    g.fillRect(0, riverY - 5, W, 5);
+    g.fillStyle(0x7a6c54, 0.7);
+    g.fillRect(0, riverY - 3, W, 2);
+    // Grass overhang top
+    for (let x = 0; x < W; x += 8) {
+      g.fillStyle(0x4a7c59, 0.6);
+      g.fillEllipse(x + 4, riverY - 4, 6, 4);
+    }
+    // Bottom bank
+    g.fillStyle(0x5c4e38);
+    g.fillRect(0, riverY + riverH, W, 5);
+    g.fillStyle(0x7a6c54, 0.7);
+    g.fillRect(0, riverY + riverH + 1, W, 2);
+    // Grass overhang bottom
+    for (let x = 0; x < W; x += 8) {
+      g.fillStyle(0x4a7c59, 0.6);
+      g.fillEllipse(x + 4, riverY + riverH + 4, 6, 4);
+    }
 
     // -- Bridges (two, one per lane) --
     const bridgeW = 64;
@@ -785,32 +826,73 @@ export class PreloadScene extends Phaser.Scene {
       g.fillRoundedRect(W / 2 - 2, y, 4, 8, 1);
     }
 
-    // -- Enemy spawn zone (dark, menacing with red glow) --
-    g.fillStyle(0x1a0a1e, 0.6);
-    g.fillRect(0, 0, W, 85);
+    // -- Enemy spawn zone (data center server room — dark, menacing) --
+    // Dark ceiling
+    g.fillStyle(0x0f0818, 0.7);
+    g.fillRect(0, 0, W, 90);
     // Gradient fade
-    g.fillStyle(0x1a0a1e, 0.3);
-    g.fillRect(0, 85, W, 20);
-    // Red danger stripes
-    g.lineStyle(2, 0xef4444, 0.12);
-    for (let x = -80; x < W + 80; x += 18) {
-      g.lineBetween(x, 0, x + 85, 85);
+    g.fillStyle(0x0f0818, 0.4);
+    g.fillRect(0, 90, W, 15);
+    g.fillStyle(0x0f0818, 0.15);
+    g.fillRect(0, 105, W, 10);
+    // Server room ceiling tiles pattern
+    g.lineStyle(0.5, 0x2a1f3a, 0.3);
+    for (let x = 0; x < W; x += 30) {
+      g.lineBetween(x, 0, x, 85);
     }
-    // Skull/danger markers
-    for (let x = 40; x < W; x += 90) {
-      g.fillStyle(0xef4444, 0.15);
-      g.fillCircle(x, 30, 6);
-      g.lineStyle(1, 0xef4444, 0.2);
-      g.strokeCircle(x, 30, 8);
+    for (let y = 0; y < 85; y += 22) {
+      g.lineBetween(0, y, W, y);
+    }
+    // Red danger stripes (diagonal)
+    g.lineStyle(1.5, 0xef4444, 0.08);
+    for (let x = -90; x < W + 90; x += 16) {
+      g.lineBetween(x, 0, x + 90, 90);
+    }
+    // Red glow at bottom of spawn zone
+    g.fillStyle(0xef4444, 0.06);
+    g.fillRect(0, 70, W, 20);
+    // Warning lights
+    for (let x = 30; x < W; x += 80) {
+      // Red beacon
+      g.fillStyle(0xef4444, 0.25);
+      g.fillCircle(x, 15, 4);
+      g.fillStyle(0xef4444, 0.1);
+      g.fillCircle(x, 15, 8);
+      // Danger triangle
+      g.lineStyle(1, 0xef4444, 0.15);
+      g.strokeTriangle(x, 25, x - 6, 35, x + 6, 35);
+      g.fillStyle(0xef4444, 0.08);
+      g.fillRect(x - 0.5, 28, 1, 4);
+      g.fillCircle(x, 33, 0.8);
     }
 
-    // -- Player deploy zone (subtle green tint) --
-    g.fillStyle(0x22c55e, 0.06);
+    // -- Player deploy zone (subtle circuit board pattern) --
+    g.fillStyle(0x22c55e, 0.04);
     g.fillRect(0, 350, W, 220);
-    // Deploy zone border
-    g.lineStyle(1, 0x22c55e, 0.1);
+    // Circuit trace lines (horizontal)
+    g.lineStyle(0.5, 0x22c55e, 0.06);
+    for (let y = 365; y < 560; y += 25) {
+      g.lineBetween(0, y, W, y);
+    }
+    // Circuit trace lines (vertical)
+    for (let x = 15; x < W; x += 35) {
+      g.lineBetween(x, 350, x, 570);
+    }
+    // Circuit nodes (small dots at intersections)
+    for (let y = 365; y < 560; y += 25) {
+      for (let x = 15; x < W; x += 35) {
+        g.fillStyle(0x22c55e, 0.08);
+        g.fillCircle(x, y, 1.5);
+      }
+    }
+    // Deploy zone glowing border
+    g.lineStyle(1.5, 0x22c55e, 0.12);
     g.lineBetween(0, 350, W, 350);
     g.lineBetween(0, 570, W, 570);
+    // Deploy zone text markers
+    g.fillStyle(0x22c55e, 0.06);
+    g.fillRect(5, 351, 50, 1);
+    g.fillRect(W - 55, 351, 50, 1);
 
     // -- Tower platforms (stone platforms with gold trim) --
     // Lane tower platforms
