@@ -44,13 +44,62 @@ export class Tower extends Phaser.GameObjects.Sprite {
     this.hp = Math.max(0, this.hp - amount);
     this.updateHpBar();
 
-    // Screen shake — bigger for main server
     if (amount > 0) {
+      // Screen shake — bigger for main server
       const intensity = this.lane === -1 ? 0.008 : 0.004;
       this.scene.cameras.main.shake(120, intensity);
-      // Flash red
+
+      // Flash red tint
       this.setTint(0xff4444);
       this.scene.time.delayedCall(100, () => this.clearTint());
+
+      // Sprite shake (offset jitter)
+      const origX = this.x;
+      this.scene.tweens.add({
+        targets: this,
+        x: origX + 3,
+        duration: 30,
+        yoyo: true,
+        repeat: 2,
+        onComplete: () => { this.x = origX; },
+      });
+
+      // Damage spark particles
+      for (let i = 0; i < 4; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 10 + Math.random() * 15;
+        const colors = [0xef4444, 0xff8c00, 0xfbbf24, 0xffffff];
+        const p = this.scene.add.circle(
+          this.x, this.y - 10,
+          2 + Math.random() * 2,
+          colors[i % colors.length], 0.9,
+        ).setDepth(20);
+        this.scene.tweens.add({
+          targets: p,
+          x: this.x + Math.cos(angle) * dist,
+          y: this.y - 10 + Math.sin(angle) * dist,
+          alpha: 0,
+          scaleX: 0.2,
+          scaleY: 0.2,
+          duration: 250 + Math.random() * 150,
+          onComplete: () => p.destroy(),
+        });
+      }
+
+      // Red flash ring around tower
+      if (this.hp / this.maxHp < 0.4) {
+        const ring = this.scene.add.graphics().setDepth(14);
+        ring.lineStyle(2, 0xef4444, 0.5);
+        ring.strokeCircle(this.x, this.y, 20);
+        this.scene.tweens.add({
+          targets: ring,
+          scaleX: 2,
+          scaleY: 2,
+          alpha: 0,
+          duration: 300,
+          onComplete: () => ring.destroy(),
+        });
+      }
     }
 
     return this.hp <= 0;

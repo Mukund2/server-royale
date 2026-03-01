@@ -51,10 +51,12 @@ export class BattleScene extends Phaser.Scene {
   // Tower shooting
   private towerShootTimer: number = 0;
   private towerRangeGraphics!: Phaser.GameObjects.Graphics;
+  private towerAuraTimer: number = 0;
 
   // Ambient effects
   private ambientTimer: number = 0;
   private towerLedTimer: number = 0;
+  private enemyTrailTimer: number = 0;
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -91,6 +93,27 @@ export class BattleScene extends Phaser.Scene {
 
     // HUD
     this.hud = new HUD(this);
+
+    // Card tray background panel (Clash Royale dark tray)
+    const trayBg = this.add.graphics().setDepth(55);
+    const trayY = 670;
+    const trayH = GAME_HEIGHT - trayY;
+    // Main tray body
+    trayBg.fillStyle(0x1a1736);
+    trayBg.fillRoundedRect(4, trayY, GAME_WIDTH - 8, trayH - 4, { tl: 12, tr: 12, bl: 0, br: 0 });
+    // Darker inner
+    trayBg.fillStyle(0x13102a, 0.8);
+    trayBg.fillRoundedRect(8, trayY + 4, GAME_WIDTH - 16, trayH - 10, { tl: 10, tr: 10, bl: 0, br: 0 });
+    // Gold trim top
+    trayBg.fillStyle(0xfbbf24, 0.4);
+    trayBg.fillRect(4, trayY, GAME_WIDTH - 8, 2);
+    // Inner gold accent
+    trayBg.fillStyle(0xfbbf24, 0.12);
+    trayBg.fillRect(10, trayY + 3, GAME_WIDTH - 20, 1);
+    // Subtle side gold lines
+    trayBg.fillStyle(0xfbbf24, 0.1);
+    trayBg.fillRect(4, trayY, 1, trayH - 4);
+    trayBg.fillRect(GAME_WIDTH - 5, trayY, 1, trayH - 4);
 
     // Card hand
     this.cardHand = new CardHand(this, this.cardSystem, (index) => {
@@ -198,6 +221,20 @@ export class BattleScene extends Phaser.Scene {
     if (this.towerLedTimer >= 1500) {
       this.towerLedTimer = 0;
       this.blinkTowerLEDs();
+    }
+
+    // Enemy trail particles (fire/smoke)
+    this.enemyTrailTimer += delta;
+    if (this.enemyTrailTimer >= 400) {
+      this.enemyTrailTimer = 0;
+      this.spawnEnemyTrails();
+    }
+
+    // Tower defensive aura pulse
+    this.towerAuraTimer += delta;
+    if (this.towerAuraTimer >= 3000) {
+      this.towerAuraTimer = 0;
+      this.pulseTowerAuras();
     }
 
     // UI update
@@ -758,6 +795,127 @@ export class BattleScene extends Phaser.Scene {
       // Inner ring
       this.towerRangeGraphics.lineStyle(0.5, 0x22c55e, 0.04);
       this.towerRangeGraphics.strokeCircle(tower.x, tower.y, TOWER_RANGE * 0.7);
+    }
+  }
+
+  private pulseTowerAuras() {
+    for (const tower of this.towers) {
+      if (tower.isDestroyed()) continue;
+
+      // Expanding green ring (defensive pulse)
+      const ring = this.add.graphics().setDepth(6);
+      const color = tower.hp / tower.maxHp > 0.5 ? 0x22c55e : 0xfbbf24;
+      ring.lineStyle(1.5, color, 0.25);
+      ring.strokeCircle(tower.x, tower.y, 15);
+      this.tweens.add({
+        targets: ring,
+        scaleX: 3,
+        scaleY: 3,
+        alpha: 0,
+        duration: 1200,
+        ease: 'Sine.easeOut',
+        onComplete: () => ring.destroy(),
+      });
+
+      // Second delayed ring
+      this.time.delayedCall(300, () => {
+        const ring2 = this.add.graphics().setDepth(6);
+        ring2.lineStyle(1, color, 0.15);
+        ring2.strokeCircle(tower.x, tower.y, 12);
+        this.tweens.add({
+          targets: ring2,
+          scaleX: 2.5,
+          scaleY: 2.5,
+          alpha: 0,
+          duration: 1000,
+          ease: 'Sine.easeOut',
+          onComplete: () => ring2.destroy(),
+        });
+      });
+    }
+  }
+
+  private spawnEnemyTrails() {
+    const enemies = this.enemyUnits.getChildren() as Unit[];
+    for (const enemy of enemies) {
+      if (!enemy.active) continue;
+
+      // Heat creeps get fire trail
+      if (enemy.unitId === 'heat-creep') {
+        const p = this.add.circle(
+          enemy.x + Phaser.Math.Between(-4, 4),
+          enemy.y + Phaser.Math.Between(4, 10),
+          Phaser.Math.Between(2, 4),
+          Math.random() > 0.5 ? 0xff8c00 : 0xef4444,
+          0.6,
+        ).setDepth(8);
+        this.tweens.add({
+          targets: p,
+          y: p.y + 8,
+          alpha: 0,
+          scaleX: 0.2,
+          scaleY: 0.2,
+          duration: 400 + Math.random() * 200,
+          onComplete: () => p.destroy(),
+        });
+      }
+      // Ransomware gets dark smoke
+      else if (enemy.unitId === 'ransomware') {
+        const p = this.add.circle(
+          enemy.x + Phaser.Math.Between(-5, 5),
+          enemy.y + Phaser.Math.Between(5, 12),
+          Phaser.Math.Between(2, 5),
+          0x333333,
+          0.35,
+        ).setDepth(8);
+        this.tweens.add({
+          targets: p,
+          y: p.y + 10,
+          x: p.x + Phaser.Math.Between(-3, 3),
+          alpha: 0,
+          scaleX: 1.5,
+          scaleY: 1.5,
+          duration: 500 + Math.random() * 300,
+          onComplete: () => p.destroy(),
+        });
+      }
+      // Zero-day gets electric sparks
+      else if (enemy.unitId === 'zero-day') {
+        if (Math.random() < 0.5) {
+          const p = this.add.circle(
+            enemy.x + Phaser.Math.Between(-8, 8),
+            enemy.y + Phaser.Math.Between(-8, 8),
+            1.5,
+            0xfbbf24,
+            0.8,
+          ).setDepth(8);
+          this.tweens.add({
+            targets: p,
+            alpha: 0,
+            duration: 200,
+            onComplete: () => p.destroy(),
+          });
+        }
+      }
+      // Cryptominer gets purple sparkle
+      else if (enemy.unitId === 'cryptominer') {
+        if (Math.random() < 0.4) {
+          const p = this.add.circle(
+            enemy.x + Phaser.Math.Between(-6, 6),
+            enemy.y + Phaser.Math.Between(-6, 6),
+            1.5,
+            0x8b5cf6,
+            0.7,
+          ).setDepth(8);
+          this.tweens.add({
+            targets: p,
+            y: p.y - 8,
+            alpha: 0,
+            duration: 300,
+            onComplete: () => p.destroy(),
+          });
+        }
+      }
     }
   }
 
