@@ -774,15 +774,36 @@ export class BattleScene extends Phaser.Scene {
           },
         });
 
-        // Muzzle flash on tower
-        const muzzle = this.add.circle(tower.x, tower.y - 20, 6, 0xffffff, 0.6).setDepth(34);
+        // Muzzle flash on tower (brighter, bigger)
+        const muzzle = this.add.circle(tower.x, tower.y - 20, 8, 0xffffff, 0.7).setDepth(34);
         this.tweens.add({
           targets: muzzle,
+          scaleX: 2.5,
+          scaleY: 2.5,
+          alpha: 0,
+          duration: 120,
+          onComplete: () => muzzle.destroy(),
+        });
+
+        // Muzzle smoke puff
+        const smoke = this.add.circle(tower.x, tower.y - 22, 4, 0x999999, 0.3).setDepth(33);
+        this.tweens.add({
+          targets: smoke,
+          y: tower.y - 35,
           scaleX: 2,
           scaleY: 2,
           alpha: 0,
-          duration: 100,
-          onComplete: () => muzzle.destroy(),
+          duration: 400,
+          onComplete: () => smoke.destroy(),
+        });
+
+        // Tower recoil
+        const origY = tower.y;
+        this.tweens.add({
+          targets: tower,
+          y: origY + 2,
+          duration: 40,
+          yoyo: true,
         });
 
         // Show damage number
@@ -831,6 +852,29 @@ export class BattleScene extends Phaser.Scene {
         duration: 800,
         onComplete: () => led.destroy(),
       });
+
+      // Heat exhaust (rising warm air from top of tower)
+      if (tower.hp / tower.maxHp < 0.8 && this.children.length < 500) {
+        const heatX = tower.x + Phaser.Math.Between(-10, 10);
+        const heatY = tower.y - tower.displayHeight / 2 - 5;
+        const heat = this.add.graphics().setDepth(11);
+        heat.lineStyle(1, 0xffffff, 0.06);
+        // Wavy heat line
+        heat.beginPath();
+        heat.moveTo(heatX, heatY);
+        heat.lineTo(heatX + 3, heatY - 5);
+        heat.lineTo(heatX - 2, heatY - 10);
+        heat.lineTo(heatX + 2, heatY - 15);
+        heat.strokePath();
+
+        this.tweens.add({
+          targets: heat,
+          y: -10,
+          alpha: 0,
+          duration: 1000,
+          onComplete: () => heat.destroy(),
+        });
+      }
     }
   }
 
