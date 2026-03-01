@@ -32,12 +32,14 @@ export class CardHand {
     this.cardSprites = [];
 
     const hand = this.cardSystem.hand;
-    const startX = (GAME_WIDTH - (hand.length * 80)) / 2 + 40;
-    const y = 720;
+    const cardW = CardSprite.W + 8;
+    const startX = (GAME_WIDTH - (hand.length * cardW)) / 2 + cardW / 2;
+    const y = 715;
 
     for (let i = 0; i < hand.length; i++) {
       const card = hand[i];
-      const sprite = new CardSprite(this.scene, startX + i * 80, y, card, i);
+      const sprite = new CardSprite(this.scene, startX + i * cardW, y, card, i);
+      (sprite as any)._baseY = y;
       sprite.on('pointerdown', () => {
         this.onCardSelected(sprite.index);
       });

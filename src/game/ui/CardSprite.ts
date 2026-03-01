@@ -6,10 +6,14 @@ export class CardSprite extends Phaser.GameObjects.Container {
   index: number;
   bg: Phaser.GameObjects.Graphics;
   nameText: Phaser.GameObjects.Text;
+  costBadge: Phaser.GameObjects.Graphics;
   costText: Phaser.GameObjects.Text;
-  icon: Phaser.GameObjects.Sprite | null = null;
+  icon: Phaser.GameObjects.Sprite | Phaser.GameObjects.Text | null = null;
   isSelected: boolean = false;
   isAffordable: boolean = true;
+
+  static readonly W = 74;
+  static readonly H = 90;
 
   constructor(scene: Phaser.Scene, x: number, y: number, card: CardDef, index: number) {
     super(scene, x, y);
@@ -21,71 +25,133 @@ export class CardSprite extends Phaser.GameObjects.Container {
     this.drawCard(false);
     this.add(this.bg);
 
-    // Icon (unit texture or spell icon)
+    // Unit icon or spell symbol
     if (card.type === 'unit' && scene.textures.exists(card.texture)) {
-      this.icon = scene.add.sprite(0, -10, card.texture);
+      this.icon = scene.add.sprite(0, -6, card.texture).setScale(1.2);
       this.add(this.icon);
     } else {
-      // Spell indicator
-      const spellIcon = scene.add.text(0, -12, card.spellEffect === 'heal' ? '+' : card.spellEffect === 'push' ? '>' : '!', {
-        fontSize: '20px',
+      const symbols: Record<string, string> = {
+        heal: '\u2764',    // heart
+        push: '\u21c4',    // arrows
+        overclock: '\u26a1', // lightning
+      };
+      const sym = scene.add.text(0, -10, symbols[card.spellEffect || ''] || '?', {
+        fontSize: '22px',
         color: `#${card.color.toString(16).padStart(6, '0')}`,
-        fontFamily: 'monospace',
-        fontStyle: 'bold',
       }).setOrigin(0.5);
-      this.add(spellIcon);
+      this.icon = sym;
+      this.add(sym);
     }
 
     // Name
-    this.nameText = scene.add.text(0, 18, card.name, {
+    this.nameText = scene.add.text(0, 24, card.name, {
       fontSize: '9px',
-      color: '#cccccc',
-      fontFamily: 'monospace',
+      color: '#e2e8f0',
+      fontFamily: '"Trebuchet MS", sans-serif',
+      fontStyle: 'bold',
     }).setOrigin(0.5);
     this.add(this.nameText);
 
-    // Cost (top-left badge)
-    this.costText = scene.add.text(-28, -38, `${card.cost}`, {
-      fontSize: '14px',
-      color: '#bb88ff',
-      fontFamily: 'monospace',
+    // Cost badge (purple elixir drop)
+    this.costBadge = scene.add.graphics();
+    this.drawCostBadge();
+    this.add(this.costBadge);
+
+    this.costText = scene.add.text(-27, -38, `${card.cost}`, {
+      fontSize: '13px',
+      color: '#ffffff',
+      fontFamily: 'Impact, "Arial Black", sans-serif',
       fontStyle: 'bold',
       stroke: '#000000',
-      strokeThickness: 3,
+      strokeThickness: 2,
     }).setOrigin(0.5);
     this.add(this.costText);
 
-    this.setSize(70, 90);
+    this.setSize(CardSprite.W, CardSprite.H);
     this.setInteractive();
     this.setDepth(60);
     scene.add.existing(this);
   }
 
+  private drawCostBadge() {
+    this.costBadge.clear();
+    // Purple elixir drop shape
+    this.costBadge.fillStyle(0x9333ea);
+    this.costBadge.fillCircle(-27, -36, 11);
+    this.costBadge.lineStyle(1.5, 0xfbbf24, 0.8);
+    this.costBadge.strokeCircle(-27, -36, 11);
+    // Inner highlight
+    this.costBadge.fillStyle(0xa855f7, 0.5);
+    this.costBadge.fillCircle(-29, -38, 4);
+  }
+
   private drawCard(selected: boolean) {
     this.bg.clear();
-    const w = 70, h = 90;
+    const w = CardSprite.W, h = CardSprite.H;
 
+    // Shadow
+    this.bg.fillStyle(0x000000, 0.5);
+    this.bg.fillRoundedRect(-w / 2 + 2, -h / 2 + 3, w, h, 10);
+
+    // Main body
     if (!this.isAffordable) {
-      this.bg.fillStyle(0x111122, 0.8);
+      this.bg.fillStyle(0x1a1828, 0.9);
+    } else if (selected) {
+      this.bg.fillStyle(0x3b3870);
     } else {
-      this.bg.fillStyle(selected ? 0x2a2a5e : 0x1a1a3e);
+      this.bg.fillStyle(0x2d2a4a);
     }
-    this.bg.fillRoundedRect(-w / 2, -h / 2, w, h, 8);
+    this.bg.fillRoundedRect(-w / 2, -h / 2, w, h, 10);
 
-    this.bg.lineStyle(2, selected ? 0x88aaff : this.isAffordable ? 0x4444aa : 0x333355);
-    this.bg.strokeRoundedRect(-w / 2, -h / 2, w, h, 8);
+    // Inner panel
+    this.bg.fillStyle(selected ? 0x4a4680 : this.isAffordable ? 0x3d3a5a : 0x222238);
+    this.bg.fillRoundedRect(-w / 2 + 3, -h / 2 + 3, w - 6, h - 6, 8);
+
+    // Top highlight
+    this.bg.fillStyle(0xffffff, selected ? 0.1 : 0.05);
+    this.bg.fillRoundedRect(-w / 2 + 4, -h / 2 + 4, w - 8, h / 3, { tl: 7, tr: 7, bl: 0, br: 0 });
+
+    // Border
+    const borderColor = selected ? 0x60a5fa : this.isAffordable ? 0xfbbf24 : 0x444466;
+    const borderAlpha = selected ? 1 : this.isAffordable ? 0.6 : 0.3;
+    this.bg.lineStyle(selected ? 2.5 : 2, borderColor, borderAlpha);
+    this.bg.strokeRoundedRect(-w / 2, -h / 2, w, h, 10);
+
+    // Bottom color band (card type indicator)
+    if (this.cardDef) {
+      this.bg.fillStyle(this.cardDef.color, 0.3);
+      this.bg.fillRoundedRect(-w / 2 + 4, h / 2 - 18, w - 8, 14, { tl: 0, tr: 0, bl: 7, br: 7 });
+    }
   }
 
   setSelected(selected: boolean) {
     this.isSelected = selected;
     this.drawCard(selected);
-    this.setScale(selected ? 1.1 : 1);
+    // Pop animation
+    if (selected) {
+      this.scene.tweens.add({
+        targets: this,
+        scaleX: 1.12,
+        scaleY: 1.12,
+        y: this.y - 8,
+        duration: 100,
+        ease: 'Back.easeOut',
+      });
+    } else {
+      this.scene.tweens.add({
+        targets: this,
+        scaleX: 1,
+        scaleY: 1,
+        y: (this as any)._baseY || this.y,
+        duration: 100,
+      });
+    }
   }
 
   setAffordable(affordable: boolean) {
     this.isAffordable = affordable;
     this.drawCard(this.isSelected);
-    this.setAlpha(affordable ? 1 : 0.6);
+    this.setAlpha(affordable ? 1 : 0.5);
   }
 
   updateCard(card: CardDef, index: number) {

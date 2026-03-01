@@ -114,12 +114,16 @@ export class BattleScene extends Phaser.Scene {
       this.triggerWave();
     });
 
-    // Deploy zone label
-    this.add.text(GAME_WIDTH / 2, PLAYER_DEPLOY_MAX_Y + 10, '- DEPLOY ZONE -', {
-      fontSize: '10px',
-      color: '#335533',
-      fontFamily: 'monospace',
-    }).setOrigin(0.5).setDepth(5);
+    // Deploy zone markers (subtle dashed lines)
+    const zoneGfx = this.add.graphics().setDepth(5);
+    zoneGfx.lineStyle(1, 0x4ade80, 0.15);
+    for (let x = 10; x < GAME_WIDTH - 10; x += 16) {
+      zoneGfx.lineBetween(x, PLAYER_DEPLOY_MIN_Y, x + 8, PLAYER_DEPLOY_MIN_Y);
+      zoneGfx.lineBetween(x, PLAYER_DEPLOY_MAX_Y, x + 8, PLAYER_DEPLOY_MAX_Y);
+    }
+
+    // Fade in
+    this.cameras.main.fadeIn(400);
   }
 
   update(time: number, delta: number) {
@@ -301,8 +305,37 @@ export class BattleScene extends Phaser.Scene {
       lane,
     });
 
-    // Deploy effect
-    FloatingText.show(this, x, y, card.name, '#22cc66');
+    // Deploy effect — flash + particles
+    const flash = this.add.image(x, y, 'deploy-flash').setDepth(30).setAlpha(0.8);
+    this.tweens.add({
+      targets: flash,
+      scaleX: 2.5,
+      scaleY: 2.5,
+      alpha: 0,
+      duration: 400,
+      onComplete: () => flash.destroy(),
+    });
+
+    // Spawn particles
+    for (let i = 0; i < 6; i++) {
+      const p = this.add.image(x, y, 'particle-gold').setDepth(30).setScale(0.5);
+      const angle = (Math.PI * 2 / 6) * i;
+      this.tweens.add({
+        targets: p,
+        x: x + Math.cos(angle) * 25,
+        y: y + Math.sin(angle) * 25,
+        alpha: 0,
+        scaleX: 0.1,
+        scaleY: 0.1,
+        duration: 400,
+        onComplete: () => p.destroy(),
+      });
+    }
+
+    FloatingText.show(this, x, y - 10, card.name, '#4ade80');
+
+    // Camera pop
+    this.cameras.main.shake(80, 0.003);
   }
 
   private spawnEnemy(unitId: string, lane: number) {
@@ -385,7 +418,7 @@ export class BattleScene extends Phaser.Scene {
     this.waveSystem.startNextWave();
     this.budgetSystem.updateRegenForWave(this.waveSystem.wave);
 
-    FloatingText.showAnnouncement(this, `WAVE ${this.waveSystem.wave}`);
+    FloatingText.showBigText(this, `WAVE ${this.waveSystem.wave}`);
 
     // Try AI opponent
     this.waveSystem.setFetching(true);
@@ -447,12 +480,22 @@ export class BattleScene extends Phaser.Scene {
     this.deployIndicator.clear();
     const inZone = pointer.y >= PLAYER_DEPLOY_MIN_Y && pointer.y <= PLAYER_DEPLOY_MAX_Y && pointer.y < 670;
 
-    this.deployIndicator.lineStyle(2, inZone ? 0x22cc66 : 0xff3333, 0.6);
-    this.deployIndicator.strokeCircle(pointer.x, pointer.y, 15);
-
     if (inZone) {
-      this.deployIndicator.fillStyle(0x22cc66, 0.15);
-      this.deployIndicator.fillCircle(pointer.x, pointer.y, 15);
+      // Valid deploy - green pulsing ring
+      this.deployIndicator.fillStyle(0x4ade80, 0.12);
+      this.deployIndicator.fillCircle(pointer.x, pointer.y, 22);
+      this.deployIndicator.lineStyle(2, 0x4ade80, 0.5);
+      this.deployIndicator.strokeCircle(pointer.x, pointer.y, 22);
+      // Inner crosshair
+      this.deployIndicator.lineStyle(1, 0x4ade80, 0.3);
+      this.deployIndicator.lineBetween(pointer.x - 8, pointer.y, pointer.x + 8, pointer.y);
+      this.deployIndicator.lineBetween(pointer.x, pointer.y - 8, pointer.x, pointer.y + 8);
+    } else {
+      // Invalid - red X
+      this.deployIndicator.lineStyle(2, 0xef4444, 0.5);
+      this.deployIndicator.strokeCircle(pointer.x, pointer.y, 18);
+      this.deployIndicator.lineBetween(pointer.x - 6, pointer.y - 6, pointer.x + 6, pointer.y + 6);
+      this.deployIndicator.lineBetween(pointer.x + 6, pointer.y - 6, pointer.x - 6, pointer.y + 6);
     }
   }
 

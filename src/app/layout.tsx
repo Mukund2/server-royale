@@ -11,7 +11,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body style={{
         margin: 0,
         padding: 0,
-        backgroundColor: '#0a0a1a',
+        backgroundColor: '#070510',
+        background: 'radial-gradient(ellipse at center, #0f0a1e 0%, #070510 100%)',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
