@@ -11,6 +11,7 @@ export class HUD {
   private waveBg: Phaser.GameObjects.Graphics;
   private unitHpGraphics: Phaser.GameObjects.Graphics;
   private elixirDrops: Phaser.GameObjects.Graphics;
+  private elixirLabel: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -29,6 +30,14 @@ export class HUD {
     // Budget/Elixir bar
     this.budgetBar = scene.add.graphics().setDepth(55);
     this.elixirDrops = scene.add.graphics().setDepth(55);
+
+    // "ELIXIR" label above the bar
+    this.elixirLabel = scene.add.text(12, GAME_HEIGHT - 100, 'ELIXIR', {
+      fontSize: '8px',
+      color: '#c026d3',
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      letterSpacing: 2,
+    }).setDepth(55).setAlpha(0.6);
 
     // Budget text (centered on elixir drop)
     this.budgetText = scene.add.text(GAME_WIDTH - 30, GAME_HEIGHT - 84, '5', {
@@ -191,32 +200,47 @@ export class HUD {
       const unit = sprite as any;
       if (!unit.active || !unit.hp || !unit.maxHp) continue;
 
-      const barW = 22;
-      const barH = 4;
+      const isPlayer = unit.side === 'player';
+      const barW = 26;
+      const barH = 5;
       const barX = unit.x - barW / 2;
-      const barY = unit.y - unit.displayHeight / 2 - 8;
+      const barY = unit.y - unit.displayHeight / 2 - 9;
 
       // Shadow
       this.unitHpGraphics.fillStyle(0x000000, 0.5);
-      this.unitHpGraphics.fillRect(barX + 1, barY + 1, barW, barH);
+      this.unitHpGraphics.fillRoundedRect(barX + 1, barY + 1, barW, barH, 2);
 
       // BG
       this.unitHpGraphics.fillStyle(0x1a1a2e);
-      this.unitHpGraphics.fillRect(barX, barY, barW, barH);
+      this.unitHpGraphics.fillRoundedRect(barX, barY, barW, barH, 2);
 
-      // Fill
+      // Fill — team colored (blue for player, red for enemy in Clash Royale)
       const hpRatio = unit.hp / unit.maxHp;
-      const color = hpRatio > 0.6 ? 0x22c55e : hpRatio > 0.3 ? 0xfbbf24 : 0xef4444;
-      this.unitHpGraphics.fillStyle(color);
-      this.unitHpGraphics.fillRect(barX, barY, barW * hpRatio, barH);
+      let color: number;
+      if (isPlayer) {
+        color = hpRatio > 0.6 ? 0x22c55e : hpRatio > 0.3 ? 0xfbbf24 : 0xef4444;
+      } else {
+        color = hpRatio > 0.6 ? 0xef4444 : hpRatio > 0.3 ? 0xfbbf24 : 0x991b1b;
+      }
+      if (hpRatio > 0) {
+        this.unitHpGraphics.fillStyle(color);
+        this.unitHpGraphics.fillRoundedRect(barX + 1, barY + 1, (barW - 2) * hpRatio, barH - 2, 1);
 
-      // Highlight
-      this.unitHpGraphics.fillStyle(0xffffff, 0.2);
-      this.unitHpGraphics.fillRect(barX, barY, barW * hpRatio, barH / 2);
+        // Highlight (glass reflection)
+        this.unitHpGraphics.fillStyle(0xffffff, 0.25);
+        this.unitHpGraphics.fillRect(barX + 1, barY + 1, (barW - 2) * hpRatio, 1);
+      }
 
-      // Border
-      this.unitHpGraphics.lineStyle(1, 0x000000, 0.7);
-      this.unitHpGraphics.strokeRect(barX, barY, barW, barH);
+      // Border — team color tint
+      const borderColor = isPlayer ? 0x22c55e : 0xef4444;
+      this.unitHpGraphics.lineStyle(1, borderColor, 0.4);
+      this.unitHpGraphics.strokeRoundedRect(barX, barY, barW, barH, 2);
+
+      // Overclock indicator (golden glow)
+      if (unit.overclocked) {
+        this.unitHpGraphics.lineStyle(1, 0xfbbf24, 0.5);
+        this.unitHpGraphics.strokeRoundedRect(barX - 1, barY - 1, barW + 2, barH + 2, 3);
+      }
     }
   }
 }

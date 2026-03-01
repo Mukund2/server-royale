@@ -935,35 +935,56 @@ export class PreloadScene extends Phaser.Scene {
     g.fillRect(5, 351, 50, 1);
     g.fillRect(W - 55, 351, 50, 1);
 
-    // -- Tower platforms (stone platforms with gold trim) --
+    // -- Tower platforms (raised server room floor panels) --
     // Lane tower platforms
     for (const laneX of laneXPositions) {
-      // Platform shadow
-      g.fillStyle(0x000000, 0.2);
-      g.fillEllipse(laneX, 598, 62, 22);
-      // Stone platform
+      // Platform shadow (larger for depth)
+      g.fillStyle(0x000000, 0.25);
+      g.fillEllipse(laneX, 600, 66, 24);
+      // Raised platform base
+      g.fillStyle(0x6b6560);
+      g.fillEllipse(laneX, 597, 62, 22);
+      // Platform top surface
       g.fillStyle(0x8b8580);
       g.fillEllipse(laneX, 595, 58, 20);
-      // Platform top
-      g.fillStyle(0xa09a94);
-      g.fillEllipse(laneX, 593, 52, 16);
+      // Platform highlight
+      g.fillStyle(0xa09a94, 0.5);
+      g.fillEllipse(laneX - 4, 593, 40, 14);
       // Gold ring
-      g.lineStyle(1.5, 0xfbbf24, 0.3);
+      g.lineStyle(1.5, 0xfbbf24, 0.35);
       g.strokeEllipse(laneX, 595, 58, 20);
+      // Inner green glow ring (active tower indicator)
+      g.lineStyle(1, 0x22c55e, 0.2);
+      g.strokeEllipse(laneX, 595, 48, 16);
+      // Cable connections from platform
+      g.fillStyle(0x475569, 0.3);
+      g.fillRect(laneX - 25, 600, 3, 8);
+      g.fillRect(laneX + 22, 600, 3, 8);
     }
 
-    // Main server platform (larger, golden)
-    g.fillStyle(0x000000, 0.25);
+    // Main server platform (larger, golden, more imposing)
+    g.fillStyle(0x000000, 0.3);
+    g.fillEllipse(W / 2, 660, 92, 30);
+    // Base tier
+    g.fillStyle(0x57534e);
     g.fillEllipse(W / 2, 658, 88, 28);
+    // Top surface
     g.fillStyle(0x8b8580);
     g.fillEllipse(W / 2, 655, 84, 26);
-    g.fillStyle(0xa09a94);
-    g.fillEllipse(W / 2, 653, 76, 22);
-    // Gold accents
-    g.fillStyle(0xfbbf24, 0.15);
-    g.fillEllipse(W / 2, 653, 68, 18);
-    g.lineStyle(2, 0xfbbf24, 0.4);
+    // Surface highlight
+    g.fillStyle(0xa09a94, 0.4);
+    g.fillEllipse(W / 2 - 5, 653, 60, 18);
+    // Gold accent ring
+    g.fillStyle(0xfbbf24, 0.12);
+    g.fillEllipse(W / 2, 654, 74, 22);
+    g.lineStyle(2.5, 0xfbbf24, 0.5);
     g.strokeEllipse(W / 2, 655, 84, 26);
+    // Inner gold ring
+    g.lineStyle(1, 0xfbbf24, 0.2);
+    g.strokeEllipse(W / 2, 655, 70, 20);
+    // Green glow ring
+    g.lineStyle(1, 0x22c55e, 0.15);
+    g.strokeEllipse(W / 2, 655, 60, 16);
 
     // -- Decorative torches near tower platforms --
     const torchPositions = [
@@ -985,18 +1006,28 @@ export class PreloadScene extends Phaser.Scene {
       g.fillTriangle(tp.x, tp.y - 5, tp.x - 2, tp.y - 1, tp.x + 2, tp.y - 1);
     }
 
-    // -- Bottom HUD area (dark panel) --
+    // -- Bottom HUD area (dark panel with metallic feel) --
     g.fillStyle(0x1a1736);
     g.fillRect(0, H - 100, W, 100);
-    // Panel gradient top
+    // Panel gradient top (darker to lighter)
     g.fillStyle(0x231f42, 0.8);
-    g.fillRect(0, H - 100, W, 8);
-    // Gold trim on HUD
-    g.fillStyle(0xfbbf24, 0.35);
+    g.fillRect(0, H - 100, W, 10);
+    g.fillStyle(0x1e1a35, 0.6);
+    g.fillRect(0, H - 90, W, 5);
+    // Gold trim on HUD (thicker)
+    g.fillStyle(0xfbbf24, 0.4);
     g.fillRect(0, H - 100, W, 2);
     // Inner gold line
     g.fillStyle(0xfbbf24, 0.15);
     g.fillRect(0, H - 98, W, 1);
+    // Subtle corner accents
+    g.fillStyle(0xfbbf24, 0.1);
+    g.fillTriangle(0, H - 100, 15, H - 100, 0, H - 85);
+    g.fillTriangle(W, H - 100, W - 15, H - 100, W, H - 85);
+    // Side trim lines
+    g.fillStyle(0xfbbf24, 0.08);
+    g.fillRect(0, H - 100, 1, 100);
+    g.fillRect(W - 1, H - 100, 1, 100);
 
     // -- Edge vignette (corners darker) --
     g.fillStyle(0x1a1a2e, 0.2);
