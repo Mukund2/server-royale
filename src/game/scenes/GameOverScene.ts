@@ -279,8 +279,16 @@ export class GameOverScene extends Phaser.Scene {
       sy += 34;
     }
 
-    // ── Flavor text ──
-    this.add.text(GAME_WIDTH / 2, 430, 'The data center workforce crisis\ncontinues... but you held the line.', {
+    // ── Flavor text (varies by performance) ──
+    const flavors = isLegendary
+      ? 'The data center stands tall.\nYou are the SRE legend.'
+      : isGreat
+      ? 'Servers humming, threats neutralized.\nImpressive sysadmin skills.'
+      : isGood
+      ? 'The data center workforce crisis\ncontinues... but you held the line.'
+      : 'Servers down. Pagers screaming.\nBetter luck next deploy.';
+
+    this.add.text(GAME_WIDTH / 2, 430, flavors, {
       fontSize: '11px',
       color: '#475569',
       fontFamily: '"Trebuchet MS", sans-serif',
@@ -288,6 +296,27 @@ export class GameOverScene extends Phaser.Scene {
       align: 'center',
       lineSpacing: 5,
     }).setOrigin(0.5);
+
+    // Victory confetti (for good results)
+    if (isGood) {
+      for (let i = 0; i < 20; i++) {
+        const confettiColors = [0xfbbf24, 0x22c55e, 0x60a5fa, 0xf472b6, 0xffffff];
+        const color = confettiColors[i % confettiColors.length];
+        const cx = Phaser.Math.Between(20, GAME_WIDTH - 20);
+        const confetti = this.add.rectangle(cx, -10, 5, 3, color, 0.8);
+        confetti.setAngle(Phaser.Math.Between(0, 360));
+        this.tweens.add({
+          targets: confetti,
+          y: GAME_HEIGHT + 20,
+          angle: confetti.angle + Phaser.Math.Between(-360, 360),
+          x: cx + Phaser.Math.Between(-40, 40),
+          duration: 2000 + Math.random() * 2000,
+          delay: i * 100,
+          ease: 'Sine.easeIn',
+          onComplete: () => confetti.destroy(),
+        });
+      }
+    }
 
     // ── Buttons ──
     // Replay button (orange, like Clash Royale)

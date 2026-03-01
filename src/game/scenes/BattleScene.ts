@@ -792,6 +792,9 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private spawnAmbientParticle() {
+    // Cap total game objects to prevent performance issues
+    if (this.children.length > 500) return;
+
     const colors = [0xfbbf24, 0x22c55e, 0x60a5fa, 0xffffff];
     const x = Phaser.Math.Between(10, GAME_WIDTH - 10);
     const y = Phaser.Math.Between(50, 550);
@@ -884,6 +887,9 @@ export class BattleScene extends Phaser.Scene {
   }
 
   private spawnEnemyTrails() {
+    // Cap total game objects
+    if (this.children.length > 500) return;
+
     const enemies = this.enemyUnits.getChildren() as Unit[];
     for (const enemy of enemies) {
       if (!enemy.active) continue;
