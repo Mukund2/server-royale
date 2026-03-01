@@ -86,32 +86,43 @@ export class HUD {
     const bx = GAME_WIDTH / 2 - bw / 2;
     const by = 4;
 
+    // Color intensity increases with wave difficulty
+    const isCrisis = waveNum > 10;
+    const isHard = waveNum > 5;
+    const bannerBody = isCrisis ? 0x7f1d1d : isHard ? 0x6b2d12 : 0x7c2d12;
+    const bannerTop = isCrisis ? 0x991b1b : isHard ? 0x8b3a12 : 0x9a3412;
+    const borderColor = isCrisis ? 0xef4444 : 0xfbbf24;
+
     // Shadow
     this.waveBg.fillStyle(0x000000, 0.5);
     this.waveBg.fillRoundedRect(bx + 2, by + 3, bw, bh, 8);
     // Banner body
-    this.waveBg.fillStyle(0x7c2d12);
+    this.waveBg.fillStyle(bannerBody);
     this.waveBg.fillRoundedRect(bx, by, bw, bh, 8);
     // Top highlight
-    this.waveBg.fillStyle(0x9a3412);
+    this.waveBg.fillStyle(bannerTop);
     this.waveBg.fillRoundedRect(bx, by, bw, bh / 2, { tl: 8, tr: 8, bl: 0, br: 0 });
     // Inner glow
-    this.waveBg.fillStyle(0xfbbf24, 0.08);
+    this.waveBg.fillStyle(borderColor, 0.08);
     this.waveBg.fillRoundedRect(bx + 3, by + 3, bw - 6, bh - 6, 6);
-    // Gold border
-    this.waveBg.lineStyle(2, 0xfbbf24, 0.9);
+    // Border
+    this.waveBg.lineStyle(2, borderColor, 0.9);
     this.waveBg.strokeRoundedRect(bx, by, bw, bh, 8);
-    // Inner gold line
-    this.waveBg.lineStyle(0.5, 0xfbbf24, 0.3);
+    // Inner border
+    this.waveBg.lineStyle(0.5, borderColor, 0.3);
     this.waveBg.strokeRoundedRect(bx + 2, by + 2, bw - 4, bh - 4, 6);
     // Ribbon ends
-    this.waveBg.fillStyle(0x5c1d0e);
+    const ribbonColor = isCrisis ? 0x5c0a0a : 0x5c1d0e;
+    this.waveBg.fillStyle(ribbonColor);
     this.waveBg.fillTriangle(bx - 6, by, bx, by, bx, by + 10);
     this.waveBg.fillTriangle(bx + bw + 6, by, bx + bw, by, bx + bw, by + 10);
     this.waveBg.fillTriangle(bx - 6, by + bh, bx, by + bh, bx, by + bh - 10);
     this.waveBg.fillTriangle(bx + bw + 6, by + bh, bx + bw, by + bh, bx + bw, by + bh - 10);
 
+    // Wave text color changes with difficulty
+    const textColor = isCrisis ? '#ef4444' : isHard ? '#f97316' : '#fbbf24';
     this.waveText.setText(`WAVE ${waveNum}`);
+    this.waveText.setColor(textColor);
     this.waveText.setPosition(GAME_WIDTH / 2, by + bh / 2);
   }
 

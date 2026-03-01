@@ -1085,12 +1085,19 @@ export class PreloadScene extends Phaser.Scene {
     g.fillRect(0, H - 100, 1, 100);
     g.fillRect(W - 1, H - 100, 1, 100);
 
-    // -- Edge vignette (corners darker) --
-    g.fillStyle(0x1a1a2e, 0.2);
-    g.fillCircle(0, 0, 50);
-    g.fillCircle(W, 0, 50);
-    g.fillCircle(0, H - 100, 40);
-    g.fillCircle(W, H - 100, 40);
+    // -- Edge vignette (corners + sides darker, more dramatic) --
+    g.fillStyle(0x0a0a1e, 0.25);
+    g.fillCircle(0, 0, 60);
+    g.fillCircle(W, 0, 60);
+    g.fillCircle(0, H - 100, 50);
+    g.fillCircle(W, H - 100, 50);
+    // Side darkening strips
+    g.fillStyle(0x0a0a1e, 0.1);
+    g.fillRect(0, 0, 6, H - 100);
+    g.fillRect(W - 6, 0, 6, H - 100);
+    // Top edge darkening (below enemy zone)
+    g.fillStyle(0x0a0a1e, 0.06);
+    g.fillRect(0, 115, W, 10);
 
     g.generateTexture('arena-bg', W, H);
     g.destroy();
