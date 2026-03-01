@@ -30,15 +30,15 @@ export class HUD {
     this.budgetBar = scene.add.graphics().setDepth(55);
     this.elixirDrops = scene.add.graphics().setDepth(55);
 
-    // Budget text
-    this.budgetText = scene.add.text(GAME_WIDTH - 12, GAME_HEIGHT - 82, '5', {
-      fontSize: '18px',
-      color: '#e9d5ff',
+    // Budget text (centered on elixir drop)
+    this.budgetText = scene.add.text(GAME_WIDTH - 30, GAME_HEIGHT - 84, '5', {
+      fontSize: '16px',
+      color: '#ffffff',
       fontFamily: 'Impact, "Arial Black", sans-serif',
       fontStyle: 'bold',
       stroke: '#000000',
       strokeThickness: 3,
-    }).setOrigin(1, 0.5).setDepth(56);
+    }).setOrigin(0.5, 0.5).setDepth(56);
 
     // HP bar renderer for units
     this.unitHpGraphics = scene.add.graphics().setDepth(45);
@@ -78,59 +78,97 @@ export class HUD {
     this.elixirDrops.clear();
 
     const barX = 12;
-    const barY = GAME_HEIGHT - 90;
-    const barW = GAME_WIDTH - 55;
-    const barH = 16;
+    const barY = GAME_HEIGHT - 94;
+    const barW = GAME_WIDTH - 60;
+    const barH = 20;
+    const segW = barW / budget.maxBudget;
 
-    // Bar shadow
-    this.budgetBar.fillStyle(0x000000, 0.5);
-    this.budgetBar.fillRoundedRect(barX + 1, barY + 2, barW, barH, 6);
+    // Bar shadow (deeper)
+    this.budgetBar.fillStyle(0x000000, 0.6);
+    this.budgetBar.fillRoundedRect(barX + 2, barY + 3, barW, barH, 7);
 
-    // Bar background
-    this.budgetBar.fillStyle(0x1a1040);
-    this.budgetBar.fillRoundedRect(barX, barY, barW, barH, 6);
+    // Bar background (dark)
+    this.budgetBar.fillStyle(0x120a2e);
+    this.budgetBar.fillRoundedRect(barX, barY, barW, barH, 7);
 
-    // Elixir fill (purple gradient effect)
-    const ratio = budget.budget / budget.maxBudget;
-    if (ratio > 0) {
-      const fillW = barW * ratio;
-      // Dark purple base
-      this.budgetBar.fillStyle(0x7c3aed);
-      this.budgetBar.fillRoundedRect(barX + 1, barY + 1, fillW - 2, barH - 2, 5);
-      // Brighter top half
-      this.budgetBar.fillStyle(0xa855f7, 0.5);
-      this.budgetBar.fillRoundedRect(barX + 2, barY + 2, fillW - 4, barH / 2 - 1, { tl: 4, tr: 4, bl: 0, br: 0 });
-      // Highlight shine
-      this.budgetBar.fillStyle(0xffffff, 0.15);
-      this.budgetBar.fillRoundedRect(barX + 4, barY + 3, fillW / 2, 4, 3);
+    // Inner background depression
+    this.budgetBar.fillStyle(0x0a0518);
+    this.budgetBar.fillRoundedRect(barX + 2, barY + 2, barW - 4, barH - 4, 5);
+
+    // Fill each segment individually (Clash Royale style — each pip lights up)
+    const fullPips = Math.floor(budget.budget);
+    const partialFill = budget.budget - fullPips;
+
+    for (let i = 0; i < budget.maxBudget; i++) {
+      const sx = barX + 2 + i * segW;
+      const sw = segW - 2;
+
+      if (i < fullPips) {
+        // Fully filled pip — bright pink/purple
+        this.budgetBar.fillStyle(0xc026d3);
+        this.budgetBar.fillRoundedRect(sx + 1, barY + 3, sw, barH - 6, 3);
+        // Lighter top half (glass effect)
+        this.budgetBar.fillStyle(0xd946ef, 0.5);
+        this.budgetBar.fillRoundedRect(sx + 2, barY + 3, sw - 2, (barH - 6) / 2, { tl: 2, tr: 2, bl: 0, br: 0 });
+        // Bright highlight line
+        this.budgetBar.fillStyle(0xf0abfc, 0.3);
+        this.budgetBar.fillRoundedRect(sx + 3, barY + 4, sw / 2, 3, 1);
+      } else if (i === fullPips && partialFill > 0.05) {
+        // Partially filled pip
+        const fillPx = sw * partialFill;
+        this.budgetBar.fillStyle(0xc026d3, 0.7);
+        this.budgetBar.fillRoundedRect(sx + 1, barY + 3, fillPx, barH - 6, 3);
+        this.budgetBar.fillStyle(0xd946ef, 0.3);
+        this.budgetBar.fillRoundedRect(sx + 2, barY + 3, fillPx - 1, (barH - 6) / 2, { tl: 2, tr: 2, bl: 0, br: 0 });
+      }
     }
 
-    // Segment lines
-    this.budgetBar.lineStyle(1, 0x000000, 0.3);
+    // Segment divider lines (thin, subtle)
     for (let i = 1; i < budget.maxBudget; i++) {
-      const sx = barX + (barW / budget.maxBudget) * i;
-      this.budgetBar.lineBetween(sx, barY + 2, sx, barY + barH - 2);
+      const sx = barX + 2 + i * segW;
+      this.budgetBar.lineStyle(1.5, 0x1a0a2e, 0.8);
+      this.budgetBar.lineBetween(sx, barY + 3, sx, barY + barH - 3);
     }
 
-    // Border
-    this.budgetBar.lineStyle(2, 0x6d28d9, 0.8);
-    this.budgetBar.strokeRoundedRect(barX, barY, barW, barH, 6);
-    // Outer gold accent
-    this.budgetBar.lineStyle(1, 0xfbbf24, 0.3);
-    this.budgetBar.strokeRoundedRect(barX - 1, barY - 1, barW + 2, barH + 2, 7);
+    // Full bar glow when maxed
+    if (budget.budget >= budget.maxBudget - 0.1) {
+      this.budgetBar.lineStyle(2, 0xf0abfc, 0.3);
+      this.budgetBar.strokeRoundedRect(barX - 1, barY - 1, barW + 2, barH + 2, 8);
+    }
 
-    // Elixir drop icon (left of text)
-    const dropX = GAME_WIDTH - 38;
+    // Main border (purple)
+    this.budgetBar.lineStyle(2.5, 0x7c3aed, 0.9);
+    this.budgetBar.strokeRoundedRect(barX, barY, barW, barH, 7);
+
+    // Gold outer accent
+    this.budgetBar.lineStyle(1, 0xfbbf24, 0.25);
+    this.budgetBar.strokeRoundedRect(barX - 1, barY - 1, barW + 2, barH + 2, 8);
+
+    // Elixir drop icon (right side — bigger, more detailed)
+    const dropX = GAME_WIDTH - 30;
     const dropY = barY + barH / 2;
-    this.elixirDrops.fillStyle(0x9333ea);
-    this.elixirDrops.fillCircle(dropX, dropY, 8);
+    // Drop shadow
+    this.elixirDrops.fillStyle(0x000000, 0.4);
+    this.elixirDrops.fillCircle(dropX + 1, dropY + 1, 11);
+    // Drop body (pink-purple)
+    this.elixirDrops.fillStyle(0xc026d3);
+    this.elixirDrops.fillCircle(dropX, dropY, 10);
+    // Drop top (teardrop shape)
+    this.elixirDrops.fillStyle(0xc026d3);
+    this.elixirDrops.fillTriangle(dropX, dropY - 14, dropX - 6, dropY - 4, dropX + 6, dropY - 4);
     // Drop highlight
-    this.elixirDrops.fillStyle(0xc084fc, 0.5);
-    this.elixirDrops.fillCircle(dropX - 2, dropY - 2, 3);
-    this.elixirDrops.lineStyle(1.5, 0xfbbf24, 0.6);
-    this.elixirDrops.strokeCircle(dropX, dropY, 8);
+    this.elixirDrops.fillStyle(0xd946ef, 0.6);
+    this.elixirDrops.fillCircle(dropX - 3, dropY - 3, 4);
+    // Drop shine
+    this.elixirDrops.fillStyle(0xffffff, 0.4);
+    this.elixirDrops.fillCircle(dropX - 3, dropY - 5, 2);
+    // Gold border
+    this.elixirDrops.lineStyle(2, 0xfbbf24, 0.7);
+    this.elixirDrops.strokeCircle(dropX, dropY, 10);
 
+    // Budget number
     this.budgetText.setText(`${Math.floor(budget.budget)}`);
+    this.budgetText.setPosition(dropX, dropY + 1);
   }
 
   drawUnitHpBars(units: Phaser.Physics.Arcade.Group) {
