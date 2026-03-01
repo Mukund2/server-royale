@@ -417,90 +417,278 @@ export class PreloadScene extends Phaser.Scene {
     const g = this.add.graphics();
     const W = GAME_WIDTH, H = GAME_HEIGHT;
 
-    // -- Base grass --
+    // -- Base grass with rich variation --
     g.fillStyle(0x4a7c59);
     g.fillRect(0, 0, W, H);
 
-    // Grass stripes (lighter/darker alternating)
-    for (let y = 0; y < H; y += 20) {
-      g.fillStyle(y % 40 === 0 ? 0x527f5f : 0x437053);
-      g.fillRect(0, y, W, 20);
+    // Alternating grass stripes (Clash Royale style)
+    for (let y = 0; y < H; y += 16) {
+      const stripe = y % 32 === 0;
+      g.fillStyle(stripe ? 0x558c65 : 0x477856);
+      g.fillRect(0, y, W, 16);
     }
 
-    // -- River / bridge area (horizontal band in middle) --
-    const riverY = 280;
-    const riverH = 30;
-    // Water
-    g.fillStyle(0x3b82f6, 0.7);
-    g.fillRect(0, riverY, W, riverH);
-    // Water shimmer
-    g.fillStyle(0x60a5fa, 0.4);
-    for (let x = 0; x < W; x += 30) {
-      g.fillEllipse(x + 15, riverY + riverH/2, 20, 6);
+    // Subtle grass texture dots
+    const grassColors = [0x5a9068, 0x3d6b4a, 0x6aa07a, 0x4f8a60];
+    for (let i = 0; i < 200; i++) {
+      const gx = ((i * 37 + 13) % W);
+      const gy = ((i * 53 + 7) % (H - 100));
+      g.fillStyle(grassColors[i % grassColors.length], 0.3);
+      g.fillCircle(gx, gy, 1 + (i % 2));
     }
-    // River banks
-    g.fillStyle(0x8b7355);
-    g.fillRect(0, riverY - 3, W, 3);
-    g.fillRect(0, riverY + riverH, W, 3);
+
+    // Small flowers scattered in grass
+    const flowerColors = [0xf9e547, 0xffffff, 0xf472b6, 0x93c5fd];
+    for (let i = 0; i < 25; i++) {
+      const fx = ((i * 71 + 29) % (W - 40)) + 20;
+      const fy = ((i * 43 + 17) % (H - 200)) + 20;
+      // Skip river zone and HUD
+      if (fy > 260 && fy < 330) continue;
+      if (fy > H - 100) continue;
+      g.fillStyle(flowerColors[i % flowerColors.length], 0.6);
+      g.fillCircle(fx, fy, 2);
+      g.fillStyle(0x3d6b4a, 0.5);
+      g.fillCircle(fx, fy + 3, 1);
+    }
+
+    // -- Cobblestone lane paths --
+    const laneXPositions = [W / 4, W * 3 / 4];
+    const pathW = 50;
+    for (const laneX of laneXPositions) {
+      // Path base
+      g.fillStyle(0x9e8b73, 0.4);
+      g.fillRect(laneX - pathW / 2, 0, pathW, H - 100);
+      // Cobblestones
+      for (let py = 4; py < H - 100; py += 12) {
+        for (let px = 0; px < pathW - 8; px += 14) {
+          const stoneX = laneX - pathW / 2 + px + 4 + ((py / 12) % 2 === 0 ? 0 : 7);
+          const stoneW = 10 + ((px + py) % 4);
+          const stoneH = 8 + ((px * py) % 3);
+          const shade = ((px + py) % 3 === 0) ? 0xb8a890 : ((px + py) % 3 === 1) ? 0xa89880 : 0xc8b8a0;
+          g.fillStyle(shade, 0.5);
+          g.fillRoundedRect(stoneX, py, stoneW, stoneH, 2);
+          g.lineStyle(0.5, 0x6b5c45, 0.3);
+          g.strokeRoundedRect(stoneX, py, stoneW, stoneH, 2);
+        }
+      }
+    }
+
+    // -- Decorative bushes at arena edges --
+    const bushPositions = [
+      { x: 12, y: 100 }, { x: W - 12, y: 100 },
+      { x: 12, y: 200 }, { x: W - 12, y: 200 },
+      { x: 12, y: 400 }, { x: W - 12, y: 400 },
+      { x: 12, y: 500 }, { x: W - 12, y: 500 },
+    ];
+    for (const bp of bushPositions) {
+      // Bush shadow
+      g.fillStyle(0x2d5a3d, 0.3);
+      g.fillEllipse(bp.x, bp.y + 3, 20, 10);
+      // Bush body
+      g.fillStyle(0x3d8b55, 0.7);
+      g.fillCircle(bp.x, bp.y, 8);
+      g.fillCircle(bp.x - 5, bp.y + 2, 6);
+      g.fillCircle(bp.x + 5, bp.y + 2, 6);
+      // Bush highlight
+      g.fillStyle(0x5aad6e, 0.4);
+      g.fillCircle(bp.x - 2, bp.y - 3, 4);
+    }
+
+    // -- Small rocks scattered --
+    const rockPositions = [
+      { x: 30, y: 150 }, { x: W - 35, y: 155 },
+      { x: 25, y: 350 }, { x: W - 25, y: 345 },
+      { x: 35, y: 550 }, { x: W - 30, y: 545 },
+    ];
+    for (const rp of rockPositions) {
+      g.fillStyle(0x78716c, 0.5);
+      g.fillEllipse(rp.x, rp.y, 8, 5);
+      g.fillStyle(0x9e9890, 0.3);
+      g.fillEllipse(rp.x - 1, rp.y - 1, 5, 3);
+    }
+
+    // -- River (wider, more detailed) --
+    const riverY = 275;
+    const riverH = 38;
+
+    // River bed (dark underneath)
+    g.fillStyle(0x1e3a5f, 0.8);
+    g.fillRect(0, riverY + 2, W, riverH);
+
+    // Main water body
+    g.fillStyle(0x2563eb, 0.75);
+    g.fillRect(0, riverY, W, riverH);
+
+    // Water surface layers
+    g.fillStyle(0x3b82f6, 0.5);
+    g.fillRect(0, riverY, W, riverH / 2);
+
+    // Water shimmer waves
+    for (let x = 0; x < W; x += 20) {
+      g.fillStyle(0x60a5fa, 0.35);
+      g.fillEllipse(x + 10, riverY + riverH * 0.35, 16, 5);
+      g.fillStyle(0x93c5fd, 0.2);
+      g.fillEllipse(x + 5, riverY + riverH * 0.65, 14, 4);
+    }
+
+    // Sparkle highlights on water
+    for (let i = 0; i < 12; i++) {
+      const sx = ((i * 37 + 11) % W);
+      const sy = riverY + 5 + ((i * 13) % (riverH - 10));
+      g.fillStyle(0xffffff, 0.25);
+      g.fillCircle(sx, sy, 1.5);
+    }
+
+    // River banks (earthy brown with stone edge)
+    g.fillStyle(0x6b5c45);
+    g.fillRect(0, riverY - 4, W, 4);
+    g.fillRect(0, riverY + riverH, W, 4);
+    g.fillStyle(0x8b7a62, 0.6);
+    g.fillRect(0, riverY - 2, W, 2);
+    g.fillRect(0, riverY + riverH + 2, W, 2);
 
     // -- Bridges (two, one per lane) --
-    const bridgeW = 60;
-    for (const laneX of [W / 4, W * 3 / 4]) {
-      g.fillStyle(0xa78b6b);
-      g.fillRect(laneX - bridgeW / 2, riverY - 5, bridgeW, riverH + 10);
-      g.fillStyle(0x8b7355);
-      g.fillRect(laneX - bridgeW / 2, riverY - 5, bridgeW, 3);
-      g.fillRect(laneX - bridgeW / 2, riverY + riverH + 2, bridgeW, 3);
-      // Bridge rails
-      g.lineStyle(2, 0x6b5c45);
-      g.lineBetween(laneX - bridgeW / 2, riverY - 5, laneX - bridgeW / 2, riverY + riverH + 5);
-      g.lineBetween(laneX + bridgeW / 2, riverY - 5, laneX + bridgeW / 2, riverY + riverH + 5);
+    const bridgeW = 64;
+    for (const laneX of laneXPositions) {
+      // Bridge shadow
+      g.fillStyle(0x000000, 0.2);
+      g.fillRect(laneX - bridgeW / 2 + 2, riverY - 6, bridgeW, riverH + 16);
+
+      // Bridge planks
+      g.fillStyle(0xb89f7e);
+      g.fillRect(laneX - bridgeW / 2, riverY - 6, bridgeW, riverH + 12);
+
+      // Plank lines
+      g.lineStyle(1, 0x8b7355, 0.6);
+      for (let by = riverY - 4; by < riverY + riverH + 4; by += 6) {
+        g.lineBetween(laneX - bridgeW / 2 + 2, by, laneX + bridgeW / 2 - 2, by);
+      }
+
+      // Bridge stone edges
+      g.fillStyle(0x78716c);
+      g.fillRect(laneX - bridgeW / 2, riverY - 8, bridgeW, 4);
+      g.fillRect(laneX - bridgeW / 2, riverY + riverH + 4, bridgeW, 4);
+
+      // Bridge rails (stone pillars)
+      g.fillStyle(0x6b6560);
+      g.fillRoundedRect(laneX - bridgeW / 2 - 3, riverY - 10, 6, riverH + 22, 2);
+      g.fillRoundedRect(laneX + bridgeW / 2 - 3, riverY - 10, 6, riverH + 22, 2);
+      // Rail caps
+      g.fillStyle(0x9e9890);
+      g.fillRoundedRect(laneX - bridgeW / 2 - 4, riverY - 12, 8, 4, 2);
+      g.fillRoundedRect(laneX + bridgeW / 2 - 4, riverY - 12, 8, 4, 2);
     }
 
-    // -- Lane divider (subtle center line) --
-    g.lineStyle(1.5, 0x3d6b4a, 0.5);
-    for (let y = 0; y < H - 120; y += 12) {
-      g.lineBetween(W / 2, y, W / 2, y + 6);
+    // -- Lane divider (center fence/hedge) --
+    g.lineStyle(2, 0x3d6b4a, 0.4);
+    for (let y = 0; y < H - 120; y += 10) {
+      // Skip river zone
+      if (y > riverY - 10 && y < riverY + riverH + 10) continue;
+      g.lineBetween(W / 2, y, W / 2, y + 5);
+    }
+    // Fence posts
+    for (let y = 10; y < H - 120; y += 40) {
+      if (y > riverY - 10 && y < riverY + riverH + 10) continue;
+      g.fillStyle(0x6b5c45, 0.5);
+      g.fillRoundedRect(W / 2 - 2, y, 4, 8, 1);
     }
 
-    // -- Enemy spawn zone (dark, menacing) --
-    g.fillStyle(0x1a1a2e, 0.5);
-    g.fillRect(0, 0, W, 80);
-    // Danger stripes
-    g.lineStyle(2, 0xef4444, 0.15);
-    for (let x = -80; x < W + 80; x += 20) {
-      g.lineBetween(x, 0, x + 80, 80);
+    // -- Enemy spawn zone (dark, menacing with red glow) --
+    g.fillStyle(0x1a0a1e, 0.6);
+    g.fillRect(0, 0, W, 85);
+    // Gradient fade
+    g.fillStyle(0x1a0a1e, 0.3);
+    g.fillRect(0, 85, W, 20);
+    // Red danger stripes
+    g.lineStyle(2, 0xef4444, 0.12);
+    for (let x = -80; x < W + 80; x += 18) {
+      g.lineBetween(x, 0, x + 85, 85);
+    }
+    // Skull/danger markers
+    for (let x = 40; x < W; x += 90) {
+      g.fillStyle(0xef4444, 0.15);
+      g.fillCircle(x, 30, 6);
+      g.lineStyle(1, 0xef4444, 0.2);
+      g.strokeCircle(x, 30, 8);
     }
 
-    // -- Player deploy zone (subtle highlight) --
-    g.fillStyle(0x22c55e, 0.08);
-    g.fillRect(0, 390, W, 180);
+    // -- Player deploy zone (subtle green tint) --
+    g.fillStyle(0x22c55e, 0.06);
+    g.fillRect(0, 350, W, 220);
+    // Deploy zone border
+    g.lineStyle(1, 0x22c55e, 0.1);
+    g.lineBetween(0, 350, W, 350);
+    g.lineBetween(0, 570, W, 570);
 
-    // -- Tower platforms --
+    // -- Tower platforms (stone platforms with gold trim) --
     // Lane tower platforms
-    for (const laneX of [W / 4, W * 3 / 4]) {
-      g.fillStyle(0x78716c, 0.6);
-      g.fillEllipse(laneX, 595, 56, 20);
-      g.fillStyle(0x57534e, 0.4);
-      g.fillEllipse(laneX, 595, 48, 16);
+    for (const laneX of laneXPositions) {
+      // Platform shadow
+      g.fillStyle(0x000000, 0.2);
+      g.fillEllipse(laneX, 598, 62, 22);
+      // Stone platform
+      g.fillStyle(0x8b8580);
+      g.fillEllipse(laneX, 595, 58, 20);
+      // Platform top
+      g.fillStyle(0xa09a94);
+      g.fillEllipse(laneX, 593, 52, 16);
+      // Gold ring
+      g.lineStyle(1.5, 0xfbbf24, 0.3);
+      g.strokeEllipse(laneX, 595, 58, 20);
     }
-    // Main server platform
-    g.fillStyle(0x78716c, 0.6);
-    g.fillEllipse(W / 2, 655, 80, 24);
+
+    // Main server platform (larger, golden)
+    g.fillStyle(0x000000, 0.25);
+    g.fillEllipse(W / 2, 658, 88, 28);
+    g.fillStyle(0x8b8580);
+    g.fillEllipse(W / 2, 655, 84, 26);
+    g.fillStyle(0xa09a94);
+    g.fillEllipse(W / 2, 653, 76, 22);
+    // Gold accents
     g.fillStyle(0xfbbf24, 0.15);
-    g.fillEllipse(W / 2, 655, 72, 20);
+    g.fillEllipse(W / 2, 653, 68, 18);
+    g.lineStyle(2, 0xfbbf24, 0.4);
+    g.strokeEllipse(W / 2, 655, 84, 26);
+
+    // -- Decorative torches near tower platforms --
+    const torchPositions = [
+      { x: W / 4 - 35, y: 580 }, { x: W / 4 + 35, y: 580 },
+      { x: W * 3 / 4 - 35, y: 580 }, { x: W * 3 / 4 + 35, y: 580 },
+      { x: W / 2 - 50, y: 640 }, { x: W / 2 + 50, y: 640 },
+    ];
+    for (const tp of torchPositions) {
+      // Torch pole
+      g.fillStyle(0x6b5c45);
+      g.fillRect(tp.x - 1, tp.y, 3, 12);
+      // Flame glow
+      g.fillStyle(0xfbbf24, 0.15);
+      g.fillCircle(tp.x, tp.y - 2, 8);
+      // Flame
+      g.fillStyle(0xff8c00, 0.7);
+      g.fillTriangle(tp.x, tp.y - 7, tp.x - 3, tp.y, tp.x + 3, tp.y);
+      g.fillStyle(0xfbbf24, 0.6);
+      g.fillTriangle(tp.x, tp.y - 5, tp.x - 2, tp.y - 1, tp.x + 2, tp.y - 1);
+    }
 
     // -- Bottom HUD area (dark panel) --
-    g.fillStyle(0x1e1b3a);
-    g.fillRect(0, H - 95, W, 95);
+    g.fillStyle(0x1a1736);
+    g.fillRect(0, H - 100, W, 100);
+    // Panel gradient top
+    g.fillStyle(0x231f42, 0.8);
+    g.fillRect(0, H - 100, W, 8);
     // Gold trim on HUD
-    g.fillStyle(0xfbbf24, 0.3);
-    g.fillRect(0, H - 95, W, 2);
+    g.fillStyle(0xfbbf24, 0.35);
+    g.fillRect(0, H - 100, W, 2);
+    // Inner gold line
+    g.fillStyle(0xfbbf24, 0.15);
+    g.fillRect(0, H - 98, W, 1);
 
-    // -- Corner decorations --
-    g.fillStyle(0x2d5a3d, 0.4);
-    g.fillCircle(0, 0, 30);
-    g.fillCircle(W, 0, 30);
+    // -- Edge vignette (corners darker) --
+    g.fillStyle(0x1a1a2e, 0.2);
+    g.fillCircle(0, 0, 50);
+    g.fillCircle(W, 0, 50);
+    g.fillCircle(0, H - 100, 40);
+    g.fillCircle(W, H - 100, 40);
 
     g.generateTexture('arena-bg', W, H);
     g.destroy();
