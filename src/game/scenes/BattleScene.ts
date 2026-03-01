@@ -57,6 +57,7 @@ export class BattleScene extends Phaser.Scene {
   private ambientTimer: number = 0;
   private towerLedTimer: number = 0;
   private enemyTrailTimer: number = 0;
+  private riverShimmerTimer: number = 0;
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -138,6 +139,14 @@ export class BattleScene extends Phaser.Scene {
     this.unitsDeployed = 0;
     this.enemiesDefeated = 0;
     this.startTime = this.time.now;
+
+    // "READY?" countdown at battle start
+    this.time.delayedCall(500, () => {
+      FloatingText.showBigText(this, 'READY?', '#60a5fa');
+    });
+    this.time.delayedCall(1500, () => {
+      FloatingText.showBigText(this, 'DEFEND!', '#22c55e');
+    });
 
     // Start first wave after a short delay
     this.waveSystem.waveTimer = GAME_WIDTH; // Will trigger soon
@@ -235,6 +244,22 @@ export class BattleScene extends Phaser.Scene {
     if (this.towerAuraTimer >= 3000) {
       this.towerAuraTimer = 0;
       this.pulseTowerAuras();
+    }
+
+    // River shimmer sparkles
+    this.riverShimmerTimer += delta;
+    if (this.riverShimmerTimer >= 600 && this.children.length < 500) {
+      this.riverShimmerTimer = 0;
+      const sparkX = Phaser.Math.Between(10, GAME_WIDTH - 10);
+      const sparkY = 275 + Phaser.Math.Between(5, 33);
+      const sparkle = this.add.circle(sparkX, sparkY, 1.5, 0xffffff, 0.5).setDepth(3);
+      this.tweens.add({
+        targets: sparkle,
+        x: sparkX + Phaser.Math.Between(-8, 8),
+        alpha: 0,
+        duration: 800,
+        onComplete: () => sparkle.destroy(),
+      });
     }
 
     // UI update
@@ -627,6 +652,17 @@ export class BattleScene extends Phaser.Scene {
       duration: 200,
       yoyo: true,
       ease: 'Sine.easeInOut',
+    });
+
+    // Red flash at enemy spawn zone
+    const spawnFlash = this.add.graphics().setDepth(95);
+    spawnFlash.fillStyle(0xef4444, 0.15);
+    spawnFlash.fillRect(0, 0, GAME_WIDTH, 90);
+    this.tweens.add({
+      targets: spawnFlash,
+      alpha: 0,
+      duration: 600,
+      onComplete: () => spawnFlash.destroy(),
     });
 
     FloatingText.showBigText(this, `WAVE ${this.waveSystem.wave}`);
