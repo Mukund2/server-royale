@@ -285,49 +285,66 @@ export class PreloadScene extends Phaser.Scene {
 
   // ── Enemy Units (menacing, hot, Clash Royale villain style — BIGGER) ──
   private generateEnemyUnits() {
-    // Heat Creep — fiery red blob with angry eyes (bigger)
+    // Heat Creep — fiery red blob with angry eyes (bigger, more menacing)
     this.createDetailedUnit('heat-creep', 38, (g, s) => {
-      // Fire aura glow
-      g.fillStyle(0xff6b00, 0.15);
-      g.fillCircle(s/2, s/2, s/2);
+      // Outer fire aura glow
+      g.fillStyle(0xff6b00, 0.12);
+      g.fillCircle(s/2, s/2, s/2 + 2);
+      g.fillStyle(0xef4444, 0.08);
+      g.fillCircle(s/2, s/2, s/2 + 4);
       // Body
       g.fillStyle(0xef4444);
       g.fillCircle(s/2, s/2 + 2, s/2 - 5);
-      // Body highlight
-      g.fillStyle(0xf87171, 0.4);
+      // Body highlight (hot center)
+      g.fillStyle(0xf87171, 0.5);
       g.fillCircle(s/2 - 3, s/2 - 2, s/3);
-      // Flame crown (multiple flames)
+      // Dark underside
+      g.fillStyle(0xb91c1c, 0.4);
+      g.fillCircle(s/2 + 2, s/2 + 6, s/4);
+      // Flame crown (5 flames, varied heights)
       g.fillStyle(0xff8c00);
-      g.fillTriangle(s/2, 0, s/2 - 6, 10, s/2 + 6, 10);
+      g.fillTriangle(s/2, -2, s/2 - 5, 10, s/2 + 5, 10);
+      g.fillTriangle(s/2 - 7, 1, s/2 - 12, 12, s/2 - 2, 12);
+      g.fillTriangle(s/2 + 7, 1, s/2 + 2, 12, s/2 + 12, 12);
+      // Flame tips (bright yellow)
       g.fillStyle(0xfbbf24);
-      g.fillTriangle(s/2, 2, s/2 - 4, 9, s/2 + 4, 9);
-      g.fillStyle(0xff8c00);
-      g.fillTriangle(s/2 - 6, 2, s/2 - 11, 12, s/2 - 1, 12);
-      g.fillTriangle(s/2 + 6, 2, s/2 + 1, 12, s/2 + 11, 12);
-      g.fillStyle(0xfbbf24, 0.6);
-      g.fillTriangle(s/2 - 5, 4, s/2 - 9, 11, s/2 - 2, 11);
-      g.fillTriangle(s/2 + 5, 4, s/2 + 2, 11, s/2 + 9, 11);
-      // Angry eyes (big, expressive)
+      g.fillTriangle(s/2, 0, s/2 - 3, 8, s/2 + 3, 8);
+      g.fillStyle(0xfde68a, 0.7);
+      g.fillTriangle(s/2 - 7, 3, s/2 - 10, 10, s/2 - 4, 10);
+      g.fillTriangle(s/2 + 7, 3, s/2 + 4, 10, s/2 + 10, 10);
+      // Side flames (smaller)
+      g.fillStyle(0xff8c00, 0.6);
+      g.fillTriangle(s/2 - 13, 6, s/2 - 16, 14, s/2 - 10, 14);
+      g.fillTriangle(s/2 + 13, 6, s/2 + 10, 14, s/2 + 16, 14);
+      // Angry eyes (big, glowing)
       g.fillStyle(0xffffff);
-      g.fillCircle(s/2 - 6, s/2, 6);
-      g.fillCircle(s/2 + 6, s/2, 6);
-      // Angry pupils
+      g.fillCircle(s/2 - 6, s/2, 7);
+      g.fillCircle(s/2 + 6, s/2, 7);
+      // Angry pupils (red tinted)
       g.fillStyle(0x1a1a2e);
-      g.fillCircle(s/2 - 5, s/2 + 1, 3);
-      g.fillCircle(s/2 + 7, s/2 + 1, 3);
+      g.fillCircle(s/2 - 4, s/2 + 1, 3.5);
+      g.fillCircle(s/2 + 8, s/2 + 1, 3.5);
+      // Red iris ring
+      g.lineStyle(0.5, 0xef4444, 0.5);
+      g.strokeCircle(s/2 - 4, s/2 + 1, 3.5);
+      g.strokeCircle(s/2 + 8, s/2 + 1, 3.5);
       // Eye shine
-      g.fillStyle(0xffffff, 0.7);
-      g.fillCircle(s/2 - 7, s/2 - 2, 1.5);
-      g.fillCircle(s/2 + 5, s/2 - 2, 1.5);
-      // Angry brows (thick, dramatic)
-      g.lineStyle(2.5, 0x7f1d1d);
-      g.lineBetween(s/2 - 12, s/2 - 7, s/2 - 2, s/2 - 4);
-      g.lineBetween(s/2 + 12, s/2 - 7, s/2 + 2, s/2 - 4);
-      // Grumpy mouth
+      g.fillStyle(0xffffff, 0.8);
+      g.fillCircle(s/2 - 6, s/2 - 2, 2);
+      g.fillCircle(s/2 + 6, s/2 - 2, 2);
+      // Angry brows (thick V-shape)
+      g.lineStyle(3, 0x7f1d1d);
+      g.lineBetween(s/2 - 13, s/2 - 8, s/2 - 2, s/2 - 4);
+      g.lineBetween(s/2 + 13, s/2 - 8, s/2 + 2, s/2 - 4);
+      // Grumpy mouth (with teeth)
       g.lineStyle(2, 0x7f1d1d);
       g.beginPath();
       g.arc(s/2, s/2 + 12, 5, Math.PI + 0.3, -0.3, false);
       g.strokePath();
+      // Teeth
+      g.fillStyle(0xffffff, 0.7);
+      g.fillRect(s/2 - 3, s/2 + 8, 2, 2);
+      g.fillRect(s/2 + 1, s/2 + 8, 2, 2);
       // Thick black outline
       g.lineStyle(3, 0x000000, 1);
       g.strokeCircle(s/2, s/2 + 2, s/2 - 5);

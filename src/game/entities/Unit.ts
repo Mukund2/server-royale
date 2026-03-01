@@ -188,6 +188,8 @@ export class Unit extends Phaser.Physics.Arcade.Sprite {
     }
 
     const damage = this.getEffectiveDps();
+    const targetX = this.target.x;
+    const targetY = this.target.y;
     const killed = this.target.takeDamage(damage);
 
     // Damage number
@@ -233,7 +235,12 @@ export class Unit extends Phaser.Physics.Arcade.Sprite {
       });
     }
 
-    if (!this.target.active) {
+    if (killed && this.scene) {
+      FloatingText.show(this.scene, targetX, targetY - 20, 'KO!',
+        this.side === 'player' ? '#4ade80' : '#ef4444', 16);
+    }
+
+    if (!this.target || !this.target.active) {
       this.target = null;
     }
   }
