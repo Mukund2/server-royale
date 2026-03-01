@@ -780,50 +780,91 @@ export class PreloadScene extends Phaser.Scene {
       g.fillEllipse(x + 4, riverY + riverH + 4, 6, 4);
     }
 
-    // -- Bridges (two, one per lane) --
+    // -- Bridges (two, one per lane — data cable / network bridge theme) --
     const bridgeW = 64;
     for (const laneX of laneXPositions) {
       // Bridge shadow
-      g.fillStyle(0x000000, 0.2);
-      g.fillRect(laneX - bridgeW / 2 + 2, riverY - 6, bridgeW, riverH + 16);
+      g.fillStyle(0x000000, 0.25);
+      g.fillRoundedRect(laneX - bridgeW / 2 + 2, riverY - 7, bridgeW, riverH + 16, 3);
 
-      // Bridge planks
-      g.fillStyle(0xb89f7e);
-      g.fillRect(laneX - bridgeW / 2, riverY - 6, bridgeW, riverH + 12);
+      // Bridge base (metal plate)
+      g.fillStyle(0x8b8580);
+      g.fillRoundedRect(laneX - bridgeW / 2, riverY - 7, bridgeW, riverH + 14, 3);
 
-      // Plank lines
-      g.lineStyle(1, 0x8b7355, 0.6);
-      for (let by = riverY - 4; by < riverY + riverH + 4; by += 6) {
-        g.lineBetween(laneX - bridgeW / 2 + 2, by, laneX + bridgeW / 2 - 2, by);
+      // Bridge surface (lighter)
+      g.fillStyle(0xa09a94);
+      g.fillRoundedRect(laneX - bridgeW / 2 + 2, riverY - 5, bridgeW - 4, riverH + 10, 2);
+
+      // Plank lines (metal grating)
+      g.lineStyle(1, 0x78716c, 0.5);
+      for (let by = riverY - 3; by < riverY + riverH + 5; by += 5) {
+        g.lineBetween(laneX - bridgeW / 2 + 3, by, laneX + bridgeW / 2 - 3, by);
+      }
+      // Cross-hatching
+      g.lineStyle(0.5, 0x78716c, 0.25);
+      for (let bx = laneX - bridgeW / 2 + 8; bx < laneX + bridgeW / 2; bx += 10) {
+        g.lineBetween(bx, riverY - 3, bx, riverY + riverH + 5);
       }
 
-      // Bridge stone edges
-      g.fillStyle(0x78716c);
-      g.fillRect(laneX - bridgeW / 2, riverY - 8, bridgeW, 4);
-      g.fillRect(laneX - bridgeW / 2, riverY + riverH + 4, bridgeW, 4);
+      // Data cable pipes along sides (colored tubes)
+      const cableColors = [0xef4444, 0x22c55e, 0x3b82f6, 0xfbbf24];
+      for (let ci = 0; ci < 4; ci++) {
+        const cx = laneX - bridgeW / 2 + 5 + ci * 3;
+        g.fillStyle(cableColors[ci], 0.5);
+        g.fillRect(cx, riverY - 5, 2, riverH + 10);
+      }
+      for (let ci = 0; ci < 4; ci++) {
+        const cx = laneX + bridgeW / 2 - 16 + ci * 3;
+        g.fillStyle(cableColors[ci], 0.5);
+        g.fillRect(cx, riverY - 5, 2, riverH + 10);
+      }
 
-      // Bridge rails (stone pillars)
+      // Bridge stone edges (thicker, more detail)
       g.fillStyle(0x6b6560);
-      g.fillRoundedRect(laneX - bridgeW / 2 - 3, riverY - 10, 6, riverH + 22, 2);
-      g.fillRoundedRect(laneX + bridgeW / 2 - 3, riverY - 10, 6, riverH + 22, 2);
-      // Rail caps
-      g.fillStyle(0x9e9890);
-      g.fillRoundedRect(laneX - bridgeW / 2 - 4, riverY - 12, 8, 4, 2);
-      g.fillRoundedRect(laneX + bridgeW / 2 - 4, riverY - 12, 8, 4, 2);
+      g.fillRoundedRect(laneX - bridgeW / 2 - 1, riverY - 9, bridgeW + 2, 4, 2);
+      g.fillRoundedRect(laneX - bridgeW / 2 - 1, riverY + riverH + 5, bridgeW + 2, 4, 2);
+      // Edge highlight
+      g.fillStyle(0x9e9890, 0.5);
+      g.fillRect(laneX - bridgeW / 2, riverY - 8, bridgeW, 1);
+
+      // Bridge pillars (stone columns)
+      g.fillStyle(0x57534e);
+      g.fillRoundedRect(laneX - bridgeW / 2 - 4, riverY - 11, 8, riverH + 24, 3);
+      g.fillRoundedRect(laneX + bridgeW / 2 - 4, riverY - 11, 8, riverH + 24, 3);
+      // Pillar highlight
+      g.fillStyle(0x78716c, 0.4);
+      g.fillRoundedRect(laneX - bridgeW / 2 - 3, riverY - 10, 4, riverH + 22, 2);
+      g.fillRoundedRect(laneX + bridgeW / 2 - 3, riverY - 10, 4, riverH + 22, 2);
+      // Pillar caps (gold accented)
+      g.fillStyle(0x8b8580);
+      g.fillRoundedRect(laneX - bridgeW / 2 - 5, riverY - 13, 10, 4, 2);
+      g.fillRoundedRect(laneX + bridgeW / 2 - 5, riverY - 13, 10, 4, 2);
+      g.fillStyle(0xfbbf24, 0.25);
+      g.fillRect(laneX - bridgeW / 2 - 4, riverY - 12, 8, 1);
+      g.fillRect(laneX + bridgeW / 2 - 4, riverY - 12, 8, 1);
     }
 
-    // -- Lane divider (center fence/hedge) --
-    g.lineStyle(2, 0x3d6b4a, 0.4);
-    for (let y = 0; y < H - 120; y += 10) {
-      // Skip river zone
-      if (y > riverY - 10 && y < riverY + riverH + 10) continue;
-      g.lineBetween(W / 2, y, W / 2, y + 5);
+    // -- Lane divider (network cable conduit — data center style) --
+    // Main conduit pipe
+    g.fillStyle(0x475569, 0.35);
+    for (let y = 0; y < H - 120; y += 2) {
+      if (y > riverY - 8 && y < riverY + riverH + 8) continue;
+      g.fillRect(W / 2 - 2, y, 4, 2);
     }
-    // Fence posts
-    for (let y = 10; y < H - 120; y += 40) {
-      if (y > riverY - 10 && y < riverY + riverH + 10) continue;
-      g.fillStyle(0x6b5c45, 0.5);
-      g.fillRoundedRect(W / 2 - 2, y, 4, 8, 1);
+    // Cable highlight (center light streak)
+    g.fillStyle(0x94a3b8, 0.15);
+    for (let y = 0; y < H - 120; y += 2) {
+      if (y > riverY - 8 && y < riverY + riverH + 8) continue;
+      g.fillRect(W / 2 - 0.5, y, 1, 2);
+    }
+    // Junction boxes (every 50px)
+    for (let y = 25; y < H - 120; y += 50) {
+      if (y > riverY - 12 && y < riverY + riverH + 12) continue;
+      g.fillStyle(0x475569, 0.5);
+      g.fillRoundedRect(W / 2 - 5, y, 10, 8, 2);
+      // Green status light
+      g.fillStyle(0x22c55e, 0.4);
+      g.fillCircle(W / 2, y + 4, 1.5);
     }
 
     // -- Enemy spawn zone (data center server room — dark, menacing) --
