@@ -52,6 +52,10 @@ export class BattleScene extends Phaser.Scene {
   private towerShootTimer: number = 0;
   private towerRangeGraphics!: Phaser.GameObjects.Graphics;
 
+  // Ambient effects
+  private ambientTimer: number = 0;
+  private towerLedTimer: number = 0;
+
   constructor() {
     super({ key: 'BattleScene' });
   }
@@ -181,6 +185,20 @@ export class BattleScene extends Phaser.Scene {
 
     // Tower range indicators (subtle)
     this.drawTowerRanges();
+
+    // Ambient sparkle particles
+    this.ambientTimer += delta;
+    if (this.ambientTimer >= 800) {
+      this.ambientTimer = 0;
+      this.spawnAmbientParticle();
+    }
+
+    // Tower LED blink
+    this.towerLedTimer += delta;
+    if (this.towerLedTimer >= 1500) {
+      this.towerLedTimer = 0;
+      this.blinkTowerLEDs();
+    }
 
     // UI update
     this.hud.update(this.budgetSystem, this.waveSystem);
@@ -516,6 +534,16 @@ export class BattleScene extends Phaser.Scene {
     this.waveSystem.startNextWave();
     this.budgetSystem.updateRegenForWave(this.waveSystem.wave);
 
+    // Camera zoom punch on wave start
+    this.cameras.main.shake(200, 0.005);
+    this.tweens.add({
+      targets: this.cameras.main,
+      zoom: 1.03,
+      duration: 200,
+      yoyo: true,
+      ease: 'Sine.easeInOut',
+    });
+
     FloatingText.showBigText(this, `WAVE ${this.waveSystem.wave}`);
 
     // Try AI opponent
@@ -658,6 +686,46 @@ export class BattleScene extends Phaser.Scene {
         // Show damage number
         FloatingText.showDamageNumber(this, nearest.x, nearest.y - 10, TOWER_DPS);
       }
+    }
+  }
+
+  private spawnAmbientParticle() {
+    const colors = [0xfbbf24, 0x22c55e, 0x60a5fa, 0xffffff];
+    const x = Phaser.Math.Between(10, GAME_WIDTH - 10);
+    const y = Phaser.Math.Between(50, 550);
+    const color = colors[Phaser.Math.Between(0, colors.length - 1)];
+
+    const p = this.add.circle(x, y, Phaser.Math.Between(1, 2), color, 0.4).setDepth(3);
+    this.tweens.add({
+      targets: p,
+      y: y - 20,
+      alpha: 0,
+      duration: 1500 + Math.random() * 1000,
+      onComplete: () => p.destroy(),
+    });
+  }
+
+  private blinkTowerLEDs() {
+    for (const tower of this.towers) {
+      if (tower.isDestroyed()) continue;
+
+      // Green LED blink
+      const ledColors = [0x22c55e, 0xfbbf24, 0xef4444];
+      const color = ledColors[Phaser.Math.Between(0, ledColors.length - 1)];
+      const led = this.add.circle(
+        tower.x + Phaser.Math.Between(-15, 15),
+        tower.y + Phaser.Math.Between(-20, 10),
+        2, color, 0.8,
+      ).setDepth(12);
+
+      this.tweens.add({
+        targets: led,
+        alpha: { from: 0.8, to: 0 },
+        scaleX: { from: 1, to: 0.3 },
+        scaleY: { from: 1, to: 0.3 },
+        duration: 800,
+        onComplete: () => led.destroy(),
+      });
     }
   }
 
