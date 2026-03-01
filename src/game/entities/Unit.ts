@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { MELEE_RANGE } from '../config/constants';
+import { FloatingText } from '../ui/FloatingText';
 
 export type UnitSide = 'player' | 'enemy';
 
@@ -187,7 +188,12 @@ export class Unit extends Phaser.Physics.Arcade.Sprite {
     }
 
     const damage = this.getEffectiveDps();
-    this.target.takeDamage(damage);
+    const killed = this.target.takeDamage(damage);
+
+    // Damage number
+    if (this.scene && this.target) {
+      FloatingText.showDamageNumber(this.scene, this.target.x + Phaser.Math.Between(-5, 5), this.target.y - 10, damage, this.overclocked);
+    }
 
     // Attack visual feedback
     if (this.scene) {
