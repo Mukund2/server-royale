@@ -32,9 +32,9 @@ export class CardHand {
     this.cardSprites = [];
 
     const hand = this.cardSystem.hand;
-    const cardW = CardSprite.W + 8;
+    const cardW = CardSprite.W + 6;
     const startX = (GAME_WIDTH - (hand.length * cardW)) / 2 + cardW / 2;
-    const y = 715;
+    const y = 718;
 
     for (let i = 0; i < hand.length; i++) {
       const card = hand[i];

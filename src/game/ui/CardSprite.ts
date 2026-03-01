@@ -11,9 +11,10 @@ export class CardSprite extends Phaser.GameObjects.Container {
   icon: Phaser.GameObjects.Sprite | Phaser.GameObjects.Text | null = null;
   isSelected: boolean = false;
   isAffordable: boolean = true;
+  private levelStar: Phaser.GameObjects.Graphics;
 
-  static readonly W = 74;
-  static readonly H = 90;
+  static readonly W = 78;
+  static readonly H = 96;
 
   constructor(scene: Phaser.Scene, x: number, y: number, card: CardDef, index: number) {
     super(scene, x, y);
@@ -25,47 +26,54 @@ export class CardSprite extends Phaser.GameObjects.Container {
     this.drawCard(false);
     this.add(this.bg);
 
-    // Unit icon or spell symbol
+    // Unit icon or spell symbol (bigger, centered in art area)
     if (card.type === 'unit' && scene.textures.exists(card.texture)) {
-      this.icon = scene.add.sprite(0, -6, card.texture).setScale(1.2);
+      this.icon = scene.add.sprite(0, -10, card.texture).setScale(1.3);
       this.add(this.icon);
     } else {
       const symbols: Record<string, string> = {
-        heal: '\u2764',    // heart
-        push: '\u21c4',    // arrows
-        overclock: '\u26a1', // lightning
+        heal: '\u2764',
+        push: '\u21c4',
+        overclock: '\u26a1',
       };
-      const sym = scene.add.text(0, -10, symbols[card.spellEffect || ''] || '?', {
-        fontSize: '22px',
+      const sym = scene.add.text(0, -14, symbols[card.spellEffect || ''] || '?', {
+        fontSize: '28px',
         color: `#${card.color.toString(16).padStart(6, '0')}`,
       }).setOrigin(0.5);
       this.icon = sym;
       this.add(sym);
     }
 
-    // Name
-    this.nameText = scene.add.text(0, 24, card.name, {
-      fontSize: '9px',
-      color: '#e2e8f0',
-      fontFamily: '"Trebuchet MS", sans-serif',
-      fontStyle: 'bold',
-    }).setOrigin(0.5);
-    this.add(this.nameText);
-
-    // Cost badge (purple elixir drop)
-    this.costBadge = scene.add.graphics();
-    this.drawCostBadge();
-    this.add(this.costBadge);
-
-    this.costText = scene.add.text(-27, -38, `${card.cost}`, {
-      fontSize: '13px',
+    // Name in bottom banner
+    this.nameText = scene.add.text(0, 30, card.name, {
+      fontSize: '10px',
       color: '#ffffff',
       fontFamily: 'Impact, "Arial Black", sans-serif',
       fontStyle: 'bold',
       stroke: '#000000',
       strokeThickness: 2,
     }).setOrigin(0.5);
+    this.add(this.nameText);
+
+    // Cost badge (elixir drop — bigger, more prominent)
+    this.costBadge = scene.add.graphics();
+    this.drawCostBadge();
+    this.add(this.costBadge);
+
+    this.costText = scene.add.text(-29, -40, `${card.cost}`, {
+      fontSize: '15px',
+      color: '#ffffff',
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 3,
+    }).setOrigin(0.5);
     this.add(this.costText);
+
+    // Level star (bottom-right)
+    this.levelStar = scene.add.graphics();
+    this.drawLevelStar();
+    this.add(this.levelStar);
 
     this.setSize(CardSprite.W, CardSprite.H);
     this.setInteractive();
@@ -75,52 +83,102 @@ export class CardSprite extends Phaser.GameObjects.Container {
 
   private drawCostBadge() {
     this.costBadge.clear();
-    // Purple elixir drop shape
-    this.costBadge.fillStyle(0x9333ea);
-    this.costBadge.fillCircle(-27, -36, 11);
-    this.costBadge.lineStyle(1.5, 0xfbbf24, 0.8);
-    this.costBadge.strokeCircle(-27, -36, 11);
-    // Inner highlight
-    this.costBadge.fillStyle(0xa855f7, 0.5);
-    this.costBadge.fillCircle(-29, -38, 4);
+    const cx = -29, cy = -38;
+    // Drop shadow
+    this.costBadge.fillStyle(0x000000, 0.4);
+    this.costBadge.fillCircle(cx + 1, cy + 1, 12);
+    // Purple elixir drop (Clash Royale pink-purple)
+    this.costBadge.fillStyle(0xc026d3);
+    this.costBadge.fillCircle(cx, cy, 12);
+    // Lighter top
+    this.costBadge.fillStyle(0xd946ef, 0.5);
+    this.costBadge.fillCircle(cx - 2, cy - 3, 6);
+    // Bright highlight
+    this.costBadge.fillStyle(0xffffff, 0.3);
+    this.costBadge.fillCircle(cx - 3, cy - 5, 3);
+    // Gold border
+    this.costBadge.lineStyle(2, 0xfbbf24, 0.9);
+    this.costBadge.strokeCircle(cx, cy, 12);
+  }
+
+  private drawLevelStar() {
+    this.levelStar.clear();
+    const sx = 27, sy = 34;
+    // Star glow
+    this.levelStar.fillStyle(0xfbbf24, 0.3);
+    this.levelStar.fillCircle(sx, sy, 7);
+    // Star body
+    this.levelStar.fillStyle(0xfbbf24);
+    this.levelStar.fillTriangle(sx, sy - 5, sx - 5, sy + 3, sx + 5, sy + 3);
+    this.levelStar.fillTriangle(sx, sy + 5, sx - 5, sy - 1, sx + 5, sy - 1);
+    // Star center
+    this.levelStar.fillStyle(0xfde68a, 0.6);
+    this.levelStar.fillCircle(sx, sy, 2);
   }
 
   private drawCard(selected: boolean) {
     this.bg.clear();
     const w = CardSprite.W, h = CardSprite.H;
 
-    // Shadow
-    this.bg.fillStyle(0x000000, 0.5);
-    this.bg.fillRoundedRect(-w / 2 + 2, -h / 2 + 3, w, h, 10);
+    // Drop shadow
+    this.bg.fillStyle(0x000000, 0.6);
+    this.bg.fillRoundedRect(-w / 2 + 3, -h / 2 + 4, w, h, 10);
 
-    // Main body
+    // Main card body
     if (!this.isAffordable) {
-      this.bg.fillStyle(0x1a1828, 0.9);
+      this.bg.fillStyle(0x1a1828, 0.95);
     } else if (selected) {
-      this.bg.fillStyle(0x3b3870);
+      this.bg.fillStyle(0x3b3880);
     } else {
       this.bg.fillStyle(0x2d2a4a);
     }
     this.bg.fillRoundedRect(-w / 2, -h / 2, w, h, 10);
 
-    // Inner panel
-    this.bg.fillStyle(selected ? 0x4a4680 : this.isAffordable ? 0x3d3a5a : 0x222238);
-    this.bg.fillRoundedRect(-w / 2 + 3, -h / 2 + 3, w - 6, h - 6, 8);
+    // Art area (top 60% of card — lighter panel for character)
+    const artH = h * 0.55;
+    const artColor = selected ? 0x4a4690 : this.isAffordable ? 0x3d3a5e : 0x252240;
+    this.bg.fillStyle(artColor);
+    this.bg.fillRoundedRect(-w / 2 + 4, -h / 2 + 4, w - 8, artH, { tl: 7, tr: 7, bl: 0, br: 0 });
 
-    // Top highlight
-    this.bg.fillStyle(0xffffff, selected ? 0.1 : 0.05);
-    this.bg.fillRoundedRect(-w / 2 + 4, -h / 2 + 4, w - 8, h / 3, { tl: 7, tr: 7, bl: 0, br: 0 });
+    // Art area color tint from card type
+    if (this.cardDef) {
+      this.bg.fillStyle(this.cardDef.color, 0.1);
+      this.bg.fillRoundedRect(-w / 2 + 4, -h / 2 + 4, w - 8, artH, { tl: 7, tr: 7, bl: 0, br: 0 });
+    }
 
-    // Border
+    // Top highlight (glass effect)
+    this.bg.fillStyle(0xffffff, selected ? 0.12 : 0.06);
+    this.bg.fillRoundedRect(-w / 2 + 5, -h / 2 + 5, w - 10, artH / 2, { tl: 6, tr: 6, bl: 0, br: 0 });
+
+    // Name banner area (bottom section)
+    const bannerY = -h / 2 + artH + 2;
+    const bannerH = h - artH - 6;
+    this.bg.fillStyle(selected ? 0x2a275a : this.isAffordable ? 0x1e1b3a : 0x18162e);
+    this.bg.fillRoundedRect(-w / 2 + 4, bannerY, w - 8, bannerH, { tl: 0, tr: 0, bl: 7, br: 7 });
+
+    // Rarity color bar at banner top
+    if (this.cardDef) {
+      this.bg.fillStyle(this.cardDef.color, this.isAffordable ? 0.6 : 0.2);
+      this.bg.fillRect(-w / 2 + 6, bannerY, w - 12, 3);
+    }
+
+    // Card border
     const borderColor = selected ? 0x60a5fa : this.isAffordable ? 0xfbbf24 : 0x444466;
-    const borderAlpha = selected ? 1 : this.isAffordable ? 0.6 : 0.3;
-    this.bg.lineStyle(selected ? 2.5 : 2, borderColor, borderAlpha);
+    const borderAlpha = selected ? 1 : this.isAffordable ? 0.7 : 0.3;
+    const borderWidth = selected ? 3 : 2;
+    this.bg.lineStyle(borderWidth, borderColor, borderAlpha);
     this.bg.strokeRoundedRect(-w / 2, -h / 2, w, h, 10);
 
-    // Bottom color band (card type indicator)
-    if (this.cardDef) {
-      this.bg.fillStyle(this.cardDef.color, 0.3);
-      this.bg.fillRoundedRect(-w / 2 + 4, h / 2 - 18, w - 8, 14, { tl: 0, tr: 0, bl: 7, br: 7 });
+    // Inner border (subtle)
+    if (this.isAffordable) {
+      this.bg.lineStyle(1, 0xfbbf24, 0.15);
+      this.bg.strokeRoundedRect(-w / 2 + 2, -h / 2 + 2, w - 4, h - 4, 9);
+    }
+
+    // Unaffordable overlay
+    if (!this.isAffordable) {
+      this.bg.fillStyle(0x000000, 0.35);
+      this.bg.fillRoundedRect(-w / 2, -h / 2, w, h, 10);
     }
   }
 
