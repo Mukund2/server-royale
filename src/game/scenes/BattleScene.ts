@@ -305,37 +305,86 @@ export class BattleScene extends Phaser.Scene {
       lane,
     });
 
-    // Deploy effect — flash + particles
-    const flash = this.add.image(x, y, 'deploy-flash').setDepth(30).setAlpha(0.8);
+    // Spawn pop-in animation
+    unit.setScale(0.2);
+    this.tweens.add({
+      targets: unit,
+      scaleX: 1.15,
+      scaleY: 1.15,
+      duration: 120,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: unit,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 80,
+        });
+      },
+    });
+
+    // Idle bounce animation (continuous)
+    this.addIdleBounce(unit);
+
+    // Deploy effect — flash + particle ring
+    const flash = this.add.image(x, y, 'deploy-flash').setDepth(30).setAlpha(0.9);
     this.tweens.add({
       targets: flash,
-      scaleX: 2.5,
-      scaleY: 2.5,
+      scaleX: 3,
+      scaleY: 3,
       alpha: 0,
-      duration: 400,
+      duration: 350,
       onComplete: () => flash.destroy(),
     });
 
-    // Spawn particles
-    for (let i = 0; i < 6; i++) {
-      const p = this.add.image(x, y, 'particle-gold').setDepth(30).setScale(0.5);
-      const angle = (Math.PI * 2 / 6) * i;
+    // Deploy ring
+    const ring = this.add.graphics().setDepth(29);
+    ring.lineStyle(3, 0x4ade80, 0.7);
+    ring.strokeCircle(x, y, 5);
+    this.tweens.add({
+      targets: ring,
+      scaleX: 4,
+      scaleY: 4,
+      alpha: 0,
+      duration: 400,
+      onComplete: () => ring.destroy(),
+    });
+
+    // Spawn particles (more, varied)
+    for (let i = 0; i < 10; i++) {
+      const color = i % 2 === 0 ? 'particle-gold' : 'particle-blue';
+      const p = this.add.image(x, y, color).setDepth(30).setScale(0.4 + Math.random() * 0.3);
+      const angle = (Math.PI * 2 / 10) * i;
+      const dist = 20 + Math.random() * 15;
       this.tweens.add({
         targets: p,
-        x: x + Math.cos(angle) * 25,
-        y: y + Math.sin(angle) * 25,
+        x: x + Math.cos(angle) * dist,
+        y: y + Math.sin(angle) * dist - 10,
         alpha: 0,
-        scaleX: 0.1,
-        scaleY: 0.1,
-        duration: 400,
+        scaleX: 0.05,
+        scaleY: 0.05,
+        duration: 350 + Math.random() * 200,
         onComplete: () => p.destroy(),
       });
     }
 
-    FloatingText.show(this, x, y - 10, card.name, '#4ade80');
+    FloatingText.show(this, x, y - 15, card.name, '#4ade80');
 
-    // Camera pop
-    this.cameras.main.shake(80, 0.003);
+    // Camera shake
+    this.cameras.main.shake(100, 0.004);
+  }
+
+  private addIdleBounce(unit: Unit) {
+    // Subtle idle bounce — makes units feel alive
+    this.tweens.add({
+      targets: unit,
+      scaleY: { from: 1, to: 1.06 },
+      scaleX: { from: 1, to: 0.96 },
+      duration: 400 + Math.random() * 200,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
   }
 
   private spawnEnemy(unitId: string, lane: number) {
@@ -372,6 +421,38 @@ export class BattleScene extends Phaser.Scene {
       speed,
       special: def.special,
       lane,
+    });
+
+    // Enemy spawn pop-in
+    unit.setScale(0.2);
+    this.tweens.add({
+      targets: unit,
+      scaleX: 1.1,
+      scaleY: 1.1,
+      duration: 150,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({
+          targets: unit,
+          scaleX: 1,
+          scaleY: 1,
+          duration: 80,
+        });
+      },
+    });
+
+    // Idle bounce
+    this.addIdleBounce(unit);
+
+    // Spawn warning particle
+    const warn = this.add.circle(x, y, 4, 0xef4444, 0.8).setDepth(28);
+    this.tweens.add({
+      targets: warn,
+      scaleX: 3,
+      scaleY: 3,
+      alpha: 0,
+      duration: 300,
+      onComplete: () => warn.destroy(),
     });
   }
 

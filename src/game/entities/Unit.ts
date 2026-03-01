@@ -97,6 +97,43 @@ export class Unit extends Phaser.Physics.Arcade.Sprite {
 
   die() {
     this.target = null;
+
+    // Death explosion particles
+    if (this.scene && this.visible) {
+      const deathColors = this.side === 'player'
+        ? [0x4ade80, 0x22c55e, 0xffffff]
+        : [0xef4444, 0xff8c00, 0xfbbf24];
+
+      // Burst particles
+      for (let i = 0; i < 8; i++) {
+        const angle = (Math.PI * 2 / 8) * i;
+        const dist = 15 + Math.random() * 10;
+        const color = deathColors[Math.floor(Math.random() * deathColors.length)];
+        const p = this.scene.add.circle(this.x, this.y, 3 + Math.random() * 2, color, 0.9).setDepth(50);
+        this.scene.tweens.add({
+          targets: p,
+          x: this.x + Math.cos(angle) * dist,
+          y: this.y + Math.sin(angle) * dist,
+          alpha: 0,
+          scaleX: 0.1,
+          scaleY: 0.1,
+          duration: 300 + Math.random() * 200,
+          onComplete: () => p.destroy(),
+        });
+      }
+
+      // Pop flash
+      const flash = this.scene.add.circle(this.x, this.y, 12, 0xffffff, 0.6).setDepth(49);
+      this.scene.tweens.add({
+        targets: flash,
+        scaleX: 2,
+        scaleY: 2,
+        alpha: 0,
+        duration: 200,
+        onComplete: () => flash.destroy(),
+      });
+    }
+
     this.setActive(false);
     this.setVisible(false);
     if (this.body) {
@@ -151,6 +188,44 @@ export class Unit extends Phaser.Physics.Arcade.Sprite {
 
     const damage = this.getEffectiveDps();
     this.target.takeDamage(damage);
+
+    // Attack visual feedback
+    if (this.scene) {
+      // Attacker lunge
+      const origX = this.x, origY = this.y;
+      const dx = (this.target.x - this.x) * 0.15;
+      const dy = (this.target.y - this.y) * 0.15;
+      this.scene.tweens.add({
+        targets: this,
+        x: origX + dx,
+        y: origY + dy,
+        duration: 60,
+        yoyo: true,
+        ease: 'Power2',
+      });
+
+      // Hit flash on target
+      if (this.target.active) {
+        this.target.setTint(0xffffff);
+        this.scene.time.delayedCall(80, () => {
+          if (this.target && this.target.active) {
+            this.target.clearTint();
+          }
+        });
+      }
+
+      // Attack line flash
+      const lineColor = this.side === 'player' ? 0x4ade80 : 0xef4444;
+      const line = this.scene.add.graphics().setDepth(35);
+      line.lineStyle(2, lineColor, 0.6);
+      line.lineBetween(this.x, this.y, this.target.x, this.target.y);
+      this.scene.tweens.add({
+        targets: line,
+        alpha: 0,
+        duration: 150,
+        onComplete: () => line.destroy(),
+      });
+    }
 
     if (!this.target.active) {
       this.target = null;
