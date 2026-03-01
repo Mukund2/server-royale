@@ -22,89 +22,128 @@ export class PreloadScene extends Phaser.Scene {
 
   // ── Player Units (warm, friendly, Supercell-style — BIGGER, bouncier) ──
   private generatePlayerUnits() {
-    // Junior Tech — green guy with hard hat (bigger, cuter)
+    // Junior Tech — green guy with hard hat (bigger, cuter, Supercell style)
     this.createDetailedUnit('junior-tech', 38, (g, s) => {
       // Shadow
-      g.fillStyle(0x000000, 0.2);
-      g.fillEllipse(s/2, s - 4, s/2 + 2, 6);
+      g.fillStyle(0x000000, 0.25);
+      g.fillEllipse(s/2, s - 3, s/2 + 3, 7);
       // Body (round, chubby)
       g.fillStyle(0x4ade80);
       g.fillCircle(s/2, s/2 + 3, s/2 - 5);
-      // Body highlight
-      g.fillStyle(0x6ee7a0, 0.5);
-      g.fillCircle(s/2 - 3, s/2 - 2, s/3);
+      // Body highlight (top-left glow)
+      g.fillStyle(0x86efac, 0.5);
+      g.fillCircle(s/2 - 4, s/2 - 3, s/3);
+      // Body darker underside
+      g.fillStyle(0x22c55e, 0.3);
+      g.fillCircle(s/2 + 2, s/2 + 8, s/4);
       // Hard hat
       g.fillStyle(0xfbbf24);
-      g.fillRoundedRect(s/2 - 11, 1, 22, 10, 4);
-      g.fillRect(s/2 - 13, 9, 26, 4);
+      g.fillRoundedRect(s/2 - 12, 0, 24, 11, 4);
+      g.fillRect(s/2 - 14, 9, 28, 4);
       // Hat highlight
-      g.fillStyle(0xfcd34d, 0.6);
-      g.fillRoundedRect(s/2 - 8, 3, 12, 5, 2);
-      // Big eyes (Supercell style)
+      g.fillStyle(0xfde68a, 0.7);
+      g.fillRoundedRect(s/2 - 9, 2, 14, 5, 2);
+      // Hat dark band
+      g.fillStyle(0xd97706, 0.5);
+      g.fillRect(s/2 - 12, 7, 24, 2);
+      // Big eyes (Supercell style — bigger, more expressive)
       g.fillStyle(0xffffff);
-      g.fillCircle(s/2 - 6, s/2 - 1, 6);
-      g.fillCircle(s/2 + 6, s/2 - 1, 6);
-      // Pupils (looking right)
+      g.fillCircle(s/2 - 6, s/2, 7);
+      g.fillCircle(s/2 + 6, s/2, 7);
+      // Pupils (looking forward-right)
       g.fillStyle(0x1a1a2e);
-      g.fillCircle(s/2 - 4, s/2 - 1, 3);
-      g.fillCircle(s/2 + 8, s/2 - 1, 3);
-      // Eye shine
-      g.fillStyle(0xffffff, 0.8);
-      g.fillCircle(s/2 - 5, s/2 - 3, 1.5);
-      g.fillCircle(s/2 + 7, s/2 - 3, 1.5);
-      // Happy mouth
+      g.fillCircle(s/2 - 4, s/2, 3.5);
+      g.fillCircle(s/2 + 8, s/2, 3.5);
+      // Eye shine (two per eye for depth)
+      g.fillStyle(0xffffff, 0.9);
+      g.fillCircle(s/2 - 5, s/2 - 2, 2);
+      g.fillCircle(s/2 + 7, s/2 - 2, 2);
+      g.fillStyle(0xffffff, 0.5);
+      g.fillCircle(s/2 - 3, s/2 + 1, 1);
+      g.fillCircle(s/2 + 9, s/2 + 1, 1);
+      // Happy mouth (wider grin)
       g.lineStyle(2, 0x166534);
       g.beginPath();
-      g.arc(s/2, s/2 + 5, 5, 0.2, Math.PI - 0.2, false);
+      g.arc(s/2, s/2 + 6, 6, 0.2, Math.PI - 0.2, false);
       g.strokePath();
+      // Blush cheeks
+      g.fillStyle(0xf472b6, 0.2);
+      g.fillCircle(s/2 - 10, s/2 + 3, 4);
+      g.fillCircle(s/2 + 10, s/2 + 3, 4);
       // Wrench in hand
       g.fillStyle(0x94a3b8);
-      g.fillRect(s - 8, s/2 + 2, 3, 10);
+      g.fillRect(s - 8, s/2 + 2, 3, 11);
       g.fillCircle(s - 6, s/2 + 2, 3);
+      g.fillStyle(0xb0bec5, 0.5);
+      g.fillCircle(s - 6, s/2 + 2, 1.5);
       // Thick black outline
       g.lineStyle(3, 0x000000, 1);
       g.strokeCircle(s/2, s/2 + 3, s/2 - 5);
     });
 
-    // Senior Engineer — blue tanky guy with glasses (bigger)
+    // Senior Engineer — blue tanky guy with glasses (bigger, more detail)
     this.createDetailedUnit('senior-engineer', 42, (g, s) => {
       // Shadow
-      g.fillStyle(0x000000, 0.2);
-      g.fillEllipse(s/2, s - 3, s/2, 6);
+      g.fillStyle(0x000000, 0.25);
+      g.fillEllipse(s/2, s - 2, s/2 + 1, 7);
       // Body (square-ish, tanky)
       g.fillStyle(0x3b82f6);
       g.fillRoundedRect(4, 4, s - 8, s - 8, 7);
-      // Body highlight
-      g.fillStyle(0x60a5fa, 0.4);
-      g.fillRoundedRect(6, 6, s/2, s/2, 5);
+      // Body highlight (top-left shine)
+      g.fillStyle(0x93c5fd, 0.35);
+      g.fillRoundedRect(6, 6, s/2, s/2 - 4, 5);
+      // Body darker bottom
+      g.fillStyle(0x1d4ed8, 0.3);
+      g.fillRoundedRect(6, s/2 + 4, s - 12, s/3, 5);
+      // Collar (white shirt peek)
+      g.fillStyle(0xffffff, 0.6);
+      g.fillTriangle(s/2, 12, s/2 - 8, 18, s/2 + 8, 18);
       // Tie
       g.fillStyle(0xef4444);
       g.fillTriangle(s/2, 16, s/2 - 4, 24, s/2 + 4, 24);
       g.fillRect(s/2 - 2, 24, 4, 10);
-      // Glasses (thick frames)
+      // Tie highlight
+      g.fillStyle(0xf87171, 0.4);
+      g.fillTriangle(s/2 - 1, 17, s/2 - 3, 23, s/2 + 1, 23);
+      // Glasses (thick frames, glare)
       g.fillStyle(0xffffff);
-      g.fillCircle(s/2 - 7, s/2 - 4, 5);
-      g.fillCircle(s/2 + 7, s/2 - 4, 5);
+      g.fillCircle(s/2 - 7, s/2 - 4, 6);
+      g.fillCircle(s/2 + 7, s/2 - 4, 6);
+      // Lens glare
+      g.fillStyle(0xe0f2fe, 0.3);
+      g.fillCircle(s/2 - 8, s/2 - 6, 3);
+      g.fillCircle(s/2 + 6, s/2 - 6, 3);
       g.lineStyle(2.5, 0x1e3a5f);
-      g.strokeCircle(s/2 - 7, s/2 - 4, 5);
-      g.strokeCircle(s/2 + 7, s/2 - 4, 5);
-      g.lineBetween(s/2 - 2, s/2 - 4, s/2 + 2, s/2 - 4);
+      g.strokeCircle(s/2 - 7, s/2 - 4, 6);
+      g.strokeCircle(s/2 + 7, s/2 - 4, 6);
+      g.lineBetween(s/2 - 1, s/2 - 4, s/2 + 1, s/2 - 4);
       // Pupils
       g.fillStyle(0x1a1a2e);
-      g.fillCircle(s/2 - 6, s/2 - 4, 2);
-      g.fillCircle(s/2 + 8, s/2 - 4, 2);
+      g.fillCircle(s/2 - 5, s/2 - 4, 2.5);
+      g.fillCircle(s/2 + 9, s/2 - 4, 2.5);
       // Eye shine
       g.fillStyle(0xffffff, 0.8);
-      g.fillCircle(s/2 - 7, s/2 - 6, 1.5);
-      g.fillCircle(s/2 + 7, s/2 - 6, 1.5);
-      // Stern mouth
+      g.fillCircle(s/2 - 6, s/2 - 6, 1.5);
+      g.fillCircle(s/2 + 8, s/2 - 6, 1.5);
+      // Determined mouth (slight frown)
       g.lineStyle(2, 0x1e3a8a);
-      g.lineBetween(s/2 - 4, s/2 + 6, s/2 + 4, s/2 + 6);
-      // Coffee mug
+      g.beginPath();
+      g.arc(s/2, s/2 + 10, 4, Math.PI + 0.3, -0.3, false);
+      g.strokePath();
+      // Coffee mug (bigger, with steam)
       g.fillStyle(0xffffff);
-      g.fillRoundedRect(s - 12, s/2, 7, 9, 2);
+      g.fillRoundedRect(s - 13, s/2, 8, 10, 2);
       g.lineStyle(1.5, 0x1e3a5f);
-      g.strokeRoundedRect(s - 12, s/2, 7, 9, 2);
+      g.strokeRoundedRect(s - 13, s/2, 8, 10, 2);
+      // Mug handle
+      g.lineStyle(1.5, 0x1e3a5f);
+      g.beginPath();
+      g.arc(s - 5, s/2 + 5, 3, -Math.PI/2, Math.PI/2, false);
+      g.strokePath();
+      // Steam
+      g.lineStyle(1, 0xffffff, 0.3);
+      g.lineBetween(s - 11, s/2 - 2, s - 10, s/2 - 5);
+      g.lineBetween(s - 8, s/2 - 1, s - 7, s/2 - 4);
       // Thick black outline
       g.lineStyle(3, 0x000000, 1);
       g.strokeRoundedRect(4, 4, s - 8, s - 8, 7);
