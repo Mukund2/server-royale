@@ -15,49 +15,126 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   create(data: GameOverData) {
-    // ── Background ──
+    // ── Background (dramatic) ──
     const bg = this.add.graphics();
     bg.fillGradientStyle(0x0f0a1e, 0x0f0a1e, 0x1a0a0a, 0x1a0a0a);
     bg.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
-    // Particle dust
-    for (let i = 0; i < 20; i++) {
+    // Radial spotlight from top
+    const spotlight = this.add.graphics();
+    spotlight.fillStyle(0xfbbf24, 0.03);
+    spotlight.fillTriangle(GAME_WIDTH / 2, 0, -50, GAME_HEIGHT / 2, GAME_WIDTH + 50, GAME_HEIGHT / 2);
+
+    // Particle dust (more, varied colors)
+    const isGood = data.wave >= 5;
+    const isGreat = data.wave >= 10;
+    const isLegendary = data.wave >= 15;
+    const particleColor = isLegendary ? 0xfbbf24 : isGreat ? 0x22c55e : isGood ? 0x3b82f6 : 0xef4444;
+
+    for (let i = 0; i < 35; i++) {
       const p = this.add.circle(
         Phaser.Math.Between(0, GAME_WIDTH),
         Phaser.Math.Between(0, GAME_HEIGHT),
-        Phaser.Math.Between(1, 2),
-        data.wave >= 10 ? 0xfbbf24 : 0xff4444,
-        Phaser.Math.FloatBetween(0.1, 0.3),
+        Phaser.Math.Between(1, 3),
+        i % 3 === 0 ? particleColor : 0xffffff,
+        Phaser.Math.FloatBetween(0.1, 0.4),
       );
       this.tweens.add({
         targets: p,
-        y: p.y - 30,
+        y: p.y - 40,
         alpha: 0,
-        duration: Phaser.Math.Between(2000, 4000),
+        duration: Phaser.Math.Between(2000, 5000),
         repeat: -1,
       });
     }
 
-    // ── Result banner ──
-    const isGood = data.wave >= 5;
-    const isGreat = data.wave >= 10;
-    const isLegendary = data.wave >= 15;
+    // ── Crown Collection (animated, Clash Royale style) ──
+    const crowns = Math.min(3, Math.floor(data.wave / 3));
+    const crownY = 40;
+    for (let i = 0; i < 3; i++) {
+      const cx = GAME_WIDTH / 2 + (i - 1) * 55;
+      const earned = i < crowns;
 
+      const crownGfx = this.add.graphics().setDepth(5);
+      if (earned) {
+        // Glow
+        crownGfx.fillStyle(0xfbbf24, 0.15);
+        crownGfx.fillCircle(cx, crownY, 22);
+        // Crown body
+        crownGfx.fillStyle(0xfbbf24);
+        crownGfx.fillRect(cx - 12, crownY - 2, 24, 14);
+        crownGfx.fillTriangle(cx - 12, crownY - 2, cx - 6, crownY - 12, cx, crownY - 2);
+        crownGfx.fillTriangle(cx, crownY - 2, cx, crownY - 14, cx, crownY - 2);
+        crownGfx.fillTriangle(cx, crownY - 2, cx + 6, crownY - 12, cx + 12, crownY - 2);
+        // Gems
+        crownGfx.fillStyle(0xef4444);
+        crownGfx.fillCircle(cx - 6, crownY + 4, 2.5);
+        crownGfx.fillStyle(0x3b82f6);
+        crownGfx.fillCircle(cx, crownY + 4, 2.5);
+        crownGfx.fillStyle(0x22c55e);
+        crownGfx.fillCircle(cx + 6, crownY + 4, 2.5);
+        crownGfx.lineStyle(2, 0x92400e);
+        crownGfx.strokeRect(cx - 12, crownY - 2, 24, 14);
+      } else {
+        // Empty crown slot
+        crownGfx.fillStyle(0x333333, 0.5);
+        crownGfx.fillRect(cx - 12, crownY - 2, 24, 14);
+        crownGfx.fillTriangle(cx - 12, crownY - 2, cx - 6, crownY - 10, cx, crownY - 2);
+        crownGfx.fillTriangle(cx, crownY - 2, cx + 6, crownY - 10, cx + 12, crownY - 2);
+        crownGfx.lineStyle(1, 0x555555, 0.5);
+        crownGfx.strokeRect(cx - 12, crownY - 2, 24, 14);
+      }
+
+      // Animated slam for earned crowns
+      if (earned) {
+        crownGfx.setScale(0);
+        this.tweens.add({
+          targets: crownGfx,
+          scaleX: 1.2,
+          scaleY: 1.2,
+          duration: 300,
+          delay: 400 + i * 300,
+          ease: 'Back.easeOut',
+          onComplete: () => {
+            this.cameras.main.shake(80, 0.003);
+            this.tweens.add({
+              targets: crownGfx,
+              scaleX: 1,
+              scaleY: 1,
+              duration: 150,
+            });
+          },
+        });
+      }
+    }
+
+    // ── Result banner (Clash Royale style) ──
     const bannerColor = isLegendary ? 0xfbbf24 : isGreat ? 0x22c55e : isGood ? 0x3b82f6 : 0xef4444;
     const bannerDark = isLegendary ? 0x92400e : isGreat ? 0x166534 : isGood ? 0x1e3a8a : 0x7f1d1d;
 
     const banner = this.add.graphics();
     // Shadow
     banner.fillStyle(0x000000, 0.5);
-    banner.fillRoundedRect(22, 72, GAME_WIDTH - 40, 80, 10);
+    banner.fillRoundedRect(22, 77, GAME_WIDTH - 40, 85, 12);
     // Banner body
     banner.fillStyle(bannerDark);
-    banner.fillRoundedRect(18, 65, GAME_WIDTH - 36, 80, 10);
+    banner.fillRoundedRect(18, 70, GAME_WIDTH - 36, 85, 12);
+    // Top half lighter
     banner.fillStyle(bannerDark + 0x111111);
-    banner.fillRoundedRect(18, 65, GAME_WIDTH - 36, 40, { tl: 10, tr: 10, bl: 0, br: 0 });
+    banner.fillRoundedRect(18, 70, GAME_WIDTH - 36, 42, { tl: 12, tr: 12, bl: 0, br: 0 });
     // Gold trim
-    banner.lineStyle(2.5, bannerColor, 0.8);
-    banner.strokeRoundedRect(18, 65, GAME_WIDTH - 36, 80, 10);
+    banner.lineStyle(3, bannerColor, 0.9);
+    banner.strokeRoundedRect(18, 70, GAME_WIDTH - 36, 85, 12);
+    // Inner trim
+    banner.lineStyle(1, bannerColor, 0.3);
+    banner.strokeRoundedRect(22, 74, GAME_WIDTH - 44, 77, 10);
+
+    // Ribbon ends
+    banner.fillStyle(bannerDark - 0x111111);
+    banner.fillTriangle(0, 70, 18, 70, 18, 95);
+    banner.fillTriangle(GAME_WIDTH, 70, GAME_WIDTH - 18, 70, GAME_WIDTH - 18, 95);
+    banner.fillTriangle(0, 155, 18, 155, 18, 130);
+    banner.fillTriangle(GAME_WIDTH, 155, GAME_WIDTH - 18, 155, GAME_WIDTH - 18, 130);
 
     // Title
     const title = isLegendary ? 'LEGENDARY!' :
@@ -65,8 +142,16 @@ export class GameOverScene extends Phaser.Scene {
                   isGood ? 'GOOD RUN!' :
                   'SERVER DOWN';
 
-    this.add.text(GAME_WIDTH / 2, 88, title, {
-      fontSize: '32px',
+    // Title shadow
+    this.add.text(GAME_WIDTH / 2 + 2, 97, title, {
+      fontSize: '34px',
+      color: '#000000',
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontStyle: 'bold',
+    }).setOrigin(0.5).setAlpha(0.5);
+
+    const titleText = this.add.text(GAME_WIDTH / 2, 95, title, {
+      fontSize: '34px',
       color: `#${bannerColor.toString(16).padStart(6, '0')}`,
       fontFamily: 'Impact, "Arial Black", sans-serif',
       fontStyle: 'bold',
@@ -74,7 +159,20 @@ export class GameOverScene extends Phaser.Scene {
       strokeThickness: 4,
     }).setOrigin(0.5);
 
-    this.add.text(GAME_WIDTH / 2, 128, `Survived ${data.wave} wave${data.wave !== 1 ? 's' : ''}`, {
+    // Title slam animation
+    titleText.setScale(0.5);
+    this.tweens.add({
+      targets: titleText,
+      scaleX: 1.1,
+      scaleY: 1.1,
+      duration: 300,
+      ease: 'Back.easeOut',
+      onComplete: () => {
+        this.tweens.add({ targets: titleText, scaleX: 1, scaleY: 1, duration: 150 });
+      },
+    });
+
+    this.add.text(GAME_WIDTH / 2, 135, `Survived ${data.wave} wave${data.wave !== 1 ? 's' : ''}`, {
       fontSize: '14px',
       color: '#94a3b8',
       fontFamily: '"Trebuchet MS", sans-serif',
@@ -124,33 +222,40 @@ export class GameOverScene extends Phaser.Scene {
       },
     });
 
-    // ── Stats ──
+    // ── Stats (animated counting, Clash Royale style) ──
+    const statsBox = this.add.graphics();
+    statsBox.fillStyle(0x1a1040, 0.6);
+    statsBox.fillRoundedRect(25, 240, GAME_WIDTH - 50, 180, 10);
+    statsBox.lineStyle(1.5, 0xfbbf24, 0.2);
+    statsBox.strokeRoundedRect(25, 240, GAME_WIDTH - 50, 180, 10);
+
     const stats = [
-      { icon: '\u{1F30A}', label: 'Waves', value: `${data.wave}`, color: '#60a5fa' },
-      { icon: '\u{2B06}', label: 'Uptime', value: `${data.uptime}%`, color: '#4ade80' },
-      { icon: '\u{1F464}', label: 'Workers', value: `${data.unitsDeployed}`, color: '#818cf8' },
-      { icon: '\u{1F4A5}', label: 'Defeated', value: `${data.enemiesDefeated}`, color: '#f97316' },
-      { icon: '\u{23F1}', label: 'Time', value: `${data.elapsed}s`, color: '#94a3b8' },
+      { label: 'Waves Survived', numValue: data.wave, suffix: '', color: '#60a5fa' },
+      { label: 'Server Uptime', numValue: data.uptime, suffix: '%', color: '#4ade80' },
+      { label: 'Workers Deployed', numValue: data.unitsDeployed, suffix: '', color: '#818cf8' },
+      { label: 'Threats Defeated', numValue: data.enemiesDefeated, suffix: '', color: '#f97316' },
+      { label: 'Survival Time', numValue: data.elapsed, suffix: 's', color: '#94a3b8' },
     ];
 
-    let sy = 240;
+    let sy = 248;
     for (let i = 0; i < stats.length; i++) {
       const stat = stats[i];
       // Row bg alternating
       if (i % 2 === 0) {
         const rowBg = this.add.graphics();
         rowBg.fillStyle(0xffffff, 0.03);
-        rowBg.fillRect(30, sy - 2, GAME_WIDTH - 60, 28);
+        rowBg.fillRoundedRect(30, sy, GAME_WIDTH - 60, 32, 4);
       }
 
-      this.add.text(50, sy + 10, stat.label, {
-        fontSize: '13px',
+      this.add.text(50, sy + 16, stat.label, {
+        fontSize: '12px',
         color: '#64748b',
         fontFamily: '"Trebuchet MS", sans-serif',
       }).setOrigin(0, 0.5);
 
-      this.add.text(GAME_WIDTH - 50, sy + 10, stat.value, {
-        fontSize: '16px',
+      // Animated counting number
+      const valueText = this.add.text(GAME_WIDTH - 50, sy + 16, '0' + stat.suffix, {
+        fontSize: '18px',
         color: stat.color,
         fontFamily: 'Impact, "Arial Black", sans-serif',
         fontStyle: 'bold',
@@ -158,7 +263,20 @@ export class GameOverScene extends Phaser.Scene {
         strokeThickness: 2,
       }).setOrigin(1, 0.5);
 
-      sy += 32;
+      // Count-up animation
+      const countObj = { val: 0 };
+      this.tweens.add({
+        targets: countObj,
+        val: stat.numValue,
+        duration: 800,
+        delay: 500 + i * 150,
+        ease: 'Power2',
+        onUpdate: () => {
+          valueText.setText(`${Math.round(countObj.val)}${stat.suffix}`);
+        },
+      });
+
+      sy += 34;
     }
 
     // ── Flavor text ──
