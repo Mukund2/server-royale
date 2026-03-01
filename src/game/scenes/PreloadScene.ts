@@ -149,70 +149,100 @@ export class PreloadScene extends Phaser.Scene {
       g.strokeRoundedRect(4, 4, s - 8, s - 8, 7);
     });
 
-    // AI Bot — orange/gold robot with antenna (bigger)
+    // AI Bot — orange/gold robot with antenna (bigger, more Supercell charm)
     this.createDetailedUnit('ai-bot', 40, (g, s) => {
       // Shadow
-      g.fillStyle(0x000000, 0.2);
-      g.fillEllipse(s/2, s - 3, s/2 - 2, 6);
+      g.fillStyle(0x000000, 0.25);
+      g.fillEllipse(s/2, s - 3, s/2 - 2, 7);
       // Antenna
       g.lineStyle(2.5, 0x888888);
       g.lineBetween(s/2, 0, s/2, 8);
       g.fillStyle(0xff0000);
       g.fillCircle(s/2, 2, 4);
+      // Antenna glow
+      g.fillStyle(0xff0000, 0.3);
+      g.fillCircle(s/2, 2, 6);
       g.fillStyle(0xff6666, 0.5);
       g.fillCircle(s/2 - 1, 1, 2);
       // Head body
       g.fillStyle(0xf97316);
       g.fillRoundedRect(5, 8, s - 10, s - 14, 6);
-      // Body highlight
+      // Body highlight (top-left)
       g.fillStyle(0xfb923c, 0.4);
       g.fillRoundedRect(7, 10, s/2 - 4, s/2 - 4, 4);
-      // Screen face
+      // Body darker bottom
+      g.fillStyle(0xc2410c, 0.25);
+      g.fillRoundedRect(7, s/2 + 4, s - 14, s/3 - 2, 4);
+      // Screen face (bigger)
       g.fillStyle(0x0a0a1a);
-      g.fillRoundedRect(10, 13, s - 20, s/2 - 6, 4);
-      // Screen glow
-      g.fillStyle(0x22ff88, 0.1);
-      g.fillRoundedRect(11, 14, s - 22, s/2 - 8, 3);
+      g.fillRoundedRect(10, 13, s - 20, s/2 - 4, 4);
+      // Screen glow (brighter)
+      g.fillStyle(0x22ff88, 0.12);
+      g.fillRoundedRect(11, 14, s - 22, s/2 - 6, 3);
+      // Scan line effect on screen
+      g.fillStyle(0x22ff88, 0.04);
+      g.fillRect(11, 18, s - 22, 1);
+      g.fillRect(11, 22, s - 22, 1);
+      g.fillRect(11, 26, s - 22, 1);
       // LED eyes (bigger, glowing)
       g.fillStyle(0x22ff88);
       g.fillRoundedRect(s/2 - 8, 17, 5, 5, 1);
       g.fillRoundedRect(s/2 + 3, 17, 5, 5, 1);
-      // Eye glow
-      g.fillStyle(0x22ff88, 0.3);
+      // Eye glow (stronger)
+      g.fillStyle(0x22ff88, 0.35);
       g.fillCircle(s/2 - 5, 19, 5);
       g.fillCircle(s/2 + 5, 19, 5);
-      // Mouth (digital smile)
+      // Eye shine
+      g.fillStyle(0xffffff, 0.4);
+      g.fillCircle(s/2 - 7, 17, 1);
+      g.fillCircle(s/2 + 4, 17, 1);
+      // Mouth (digital smile — wider)
       g.lineStyle(1.5, 0x22ff88);
-      g.lineBetween(s/2 - 6, 26, s/2 - 3, 26);
+      g.lineBetween(s/2 - 7, 26, s/2 - 3, 26);
       g.lineBetween(s/2 - 3, 26, s/2 - 3, 28);
       g.lineBetween(s/2 - 3, 28, s/2 + 3, 28);
       g.lineBetween(s/2 + 3, 28, s/2 + 3, 26);
-      g.lineBetween(s/2 + 3, 26, s/2 + 6, 26);
-      // Body bolts
-      g.fillStyle(0xaaaaaa);
+      g.lineBetween(s/2 + 3, 26, s/2 + 7, 26);
+      // Side panels (arms/vents)
+      g.fillStyle(0xc2410c, 0.4);
+      g.fillRect(6, s/2, 3, 10);
+      g.fillRect(s - 9, s/2, 3, 10);
+      // Body bolts (shinier)
+      g.fillStyle(0xcccccc);
       g.fillCircle(10, s - 10, 3);
       g.fillCircle(s - 10, s - 10, 3);
-      g.fillStyle(0x888888);
+      g.fillStyle(0x999999);
       g.fillCircle(10, s - 10, 1.5);
       g.fillCircle(s - 10, s - 10, 1.5);
+      // Chest emblem (gear icon)
+      g.lineStyle(1, 0xfbbf24, 0.4);
+      g.strokeCircle(s/2, s - 12, 3);
+      g.fillStyle(0xfbbf24, 0.3);
+      g.fillCircle(s/2, s - 12, 1.5);
       // Thick black outline
       g.lineStyle(3, 0x000000, 1);
       g.strokeRoundedRect(5, 8, s - 10, s - 14, 6);
     });
 
-    // Firewall — thick wall with glowing runes (wider, more imposing)
+    // Firewall — thick wall with glowing runes (wider, more imposing, shield motif)
     this.createDetailedUnit('firewall', 50, (g, s) => {
       const h = 28;
       const y0 = (s - h) / 2;
+      // Outer shield glow
+      g.fillStyle(0x38bdf8, 0.06);
+      g.fillRoundedRect(0, y0 - 3, s, h + 6, 6);
       // Shadow
-      g.fillStyle(0x000000, 0.2);
+      g.fillStyle(0x000000, 0.25);
       g.fillRoundedRect(4, y0 + 4, s - 4, h, 4);
       // Wall body
       g.fillStyle(0x64748b);
       g.fillRoundedRect(2, y0, s - 4, h, 4);
-      // Wall highlight
-      g.fillStyle(0x94a3b8, 0.3);
+      // Wall highlight (top third)
+      g.fillStyle(0x94a3b8, 0.35);
       g.fillRoundedRect(4, y0 + 1, s - 8, h / 3, 3);
+      // Dark bottom
+      g.fillStyle(0x475569, 0.3);
+      g.fillRoundedRect(4, y0 + 2*h/3, s - 8, h / 3, 3);
       // Bricks pattern
       g.lineStyle(1, 0x475569, 0.6);
       g.lineBetween(2, y0 + h/3, s - 2, y0 + h/3);
@@ -222,19 +252,42 @@ export class PreloadScene extends Phaser.Scene {
         g.lineBetween(xOff + i * (s-4)/5, y0, xOff + i * (s-4)/5, y0 + h/3);
         g.lineBetween(xOff + 3 + i * (s-4)/5, y0 + h/3, xOff + 3 + i * (s-4)/5, y0 + 2*h/3);
       }
-      // Glow runes (shield pattern)
+      // Glow runes (shield pattern — more, pulsing look)
       g.fillStyle(0x38bdf8, 0.8);
-      g.fillCircle(12, s/2, 3);
+      g.fillCircle(10, s/2, 3);
       g.fillCircle(s/2, s/2, 3);
-      g.fillCircle(s - 12, s/2, 3);
-      // Shield icon center (bigger)
+      g.fillCircle(s - 10, s/2, 3);
+      // Additional small runes between
+      g.fillStyle(0x38bdf8, 0.4);
+      g.fillCircle(s/4, s/2, 1.5);
+      g.fillCircle(s * 3/4, s/2, 1.5);
+      // Rune connecting lines
+      g.lineStyle(0.5, 0x38bdf8, 0.3);
+      g.lineBetween(12, s/2, s/4, s/2);
+      g.lineBetween(s/4, s/2, s/2, s/2);
+      g.lineBetween(s/2, s/2, s * 3/4, s/2);
+      g.lineBetween(s * 3/4, s/2, s - 12, s/2);
+      // Shield icon center (bigger, shinier)
+      g.fillStyle(0x38bdf8, 0.15);
+      g.fillCircle(s/2, s/2, 10);
       g.lineStyle(2, 0x38bdf8, 1);
       g.strokeCircle(s/2, s/2, 7);
-      g.fillStyle(0x38bdf8, 0.3);
+      g.fillStyle(0x38bdf8, 0.35);
       g.fillCircle(s/2, s/2, 7);
-      // Glow effect
-      g.fillStyle(0x38bdf8, 0.1);
-      g.fillCircle(s/2, s/2, 14);
+      // Shield cross
+      g.lineStyle(1.5, 0xffffff, 0.3);
+      g.lineBetween(s/2, s/2 - 5, s/2, s/2 + 5);
+      g.lineBetween(s/2 - 5, s/2, s/2 + 5, s/2);
+      // Corner brackets
+      g.lineStyle(1.5, 0x38bdf8, 0.5);
+      g.lineBetween(4, y0 + 2, 10, y0 + 2);
+      g.lineBetween(4, y0 + 2, 4, y0 + 8);
+      g.lineBetween(s - 4, y0 + 2, s - 10, y0 + 2);
+      g.lineBetween(s - 4, y0 + 2, s - 4, y0 + 8);
+      g.lineBetween(4, y0 + h - 2, 10, y0 + h - 2);
+      g.lineBetween(4, y0 + h - 2, 4, y0 + h - 8);
+      g.lineBetween(s - 4, y0 + h - 2, s - 10, y0 + h - 2);
+      g.lineBetween(s - 4, y0 + h - 2, s - 4, y0 + h - 8);
       // Thick black outline
       g.lineStyle(3, 0x000000, 1);
       g.strokeRoundedRect(2, y0, s - 4, h, 4);
@@ -350,35 +403,51 @@ export class PreloadScene extends Phaser.Scene {
       g.strokeCircle(s/2, s/2 + 2, s/2 - 5);
     });
 
-    // DDoS mini — tiny pink skull (slightly bigger)
+    // DDoS mini — tiny pink skull (slightly bigger, meaner)
     this.createDetailedUnit('ddos-mini', 20, (g, s) => {
+      // Tiny aura
+      g.fillStyle(0xf472b6, 0.1);
+      g.fillCircle(s/2, s/2, s/2);
+      // Body
       g.fillStyle(0xf472b6);
       g.fillCircle(s/2, s/2, s/2 - 2);
-      // Highlight
-      g.fillStyle(0xf9a8d4, 0.4);
+      // Highlight (top shine)
+      g.fillStyle(0xf9a8d4, 0.5);
       g.fillCircle(s/2 - 2, s/2 - 2, s/4);
+      // Dark underside
+      g.fillStyle(0xdb2777, 0.3);
+      g.fillCircle(s/2 + 1, s/2 + 2, s/4);
       // Eyes (X marks, bigger)
       g.lineStyle(2, 0x1a1a2e);
       g.lineBetween(s/2 - 5, s/2 - 3, s/2 - 1, s/2 + 1);
       g.lineBetween(s/2 - 1, s/2 - 3, s/2 - 5, s/2 + 1);
       g.lineBetween(s/2 + 1, s/2 - 3, s/2 + 5, s/2 + 1);
       g.lineBetween(s/2 + 5, s/2 - 3, s/2 + 1, s/2 + 1);
+      // Angry grumpy mouth
+      g.lineStyle(1.5, 0x831843);
+      g.lineBetween(s/2 - 3, s/2 + 3, s/2 + 3, s/2 + 3);
       // Thick outline
       g.lineStyle(2.5, 0x000000, 1);
       g.strokeCircle(s/2, s/2, s/2 - 2);
     });
 
-    // Ransomware — big dark menacing lock (bigger, scarier)
+    // Ransomware — big dark menacing lock (bigger, scarier, more detail)
     this.createDetailedUnit('ransomware', 46, (g, s) => {
+      // Outer dark aura
+      g.fillStyle(0x7f1d1d, 0.08);
+      g.fillCircle(s/2, s/2 + 4, s/2 + 2);
       // Shadow
-      g.fillStyle(0x000000, 0.2);
+      g.fillStyle(0x000000, 0.25);
       g.fillRoundedRect(6, s/3 + 4, s - 8, s * 2/3 - 4, 6);
       // Body
       g.fillStyle(0x7f1d1d);
       g.fillRoundedRect(4, s/3, s - 8, s * 2/3 - 4, 6);
-      // Body gradient
+      // Body gradient (top lighter)
       g.fillStyle(0x991b1b, 0.4);
       g.fillRoundedRect(6, s/3 + 2, s - 12, s/3 - 2, 4);
+      // Dark underside
+      g.fillStyle(0x450a0a, 0.3);
+      g.fillRoundedRect(6, s/2 + 6, s - 12, s/4, 4);
       // Lock shackle (thicker)
       g.lineStyle(5, 0x991b1b);
       g.beginPath();
@@ -389,28 +458,57 @@ export class PreloadScene extends Phaser.Scene {
       g.beginPath();
       g.arc(s/2, s/3, 8, Math.PI + 0.3, -0.3, false);
       g.strokePath();
+      // Chain links on shackle
+      g.fillStyle(0x666666, 0.4);
+      g.fillCircle(s/2 - 10, s/3, 2);
+      g.fillCircle(s/2 + 10, s/3, 2);
       // Keyhole (bigger, glowing)
       g.fillStyle(0xfbbf24, 0.3);
       g.fillCircle(s/2, s/2 + 5, 8);
       g.fillStyle(0xfbbf24);
       g.fillCircle(s/2, s/2 + 4, 5);
       g.fillRect(s/2 - 2, s/2 + 7, 4, 8);
-      // Skull decoration eyes
-      g.fillStyle(0xef4444, 0.7);
+      // Keyhole inner glow
+      g.fillStyle(0xfde68a, 0.5);
+      g.fillCircle(s/2, s/2 + 4, 2.5);
+      // Skull decoration - full skull face on body
+      g.fillStyle(0xffffff, 0.15);
+      g.fillCircle(s/2, s/3 + 10, 8);
+      // Skull eyes
+      g.fillStyle(0xef4444, 0.8);
       g.fillCircle(s/2 - 10, s/3 + 10, 3);
       g.fillCircle(s/2 + 10, s/3 + 10, 3);
-      // Danger symbol
+      // Skull eye glow
+      g.fillStyle(0xef4444, 0.3);
+      g.fillCircle(s/2 - 10, s/3 + 10, 5);
+      g.fillCircle(s/2 + 10, s/3 + 10, 5);
+      // Scratch marks (battle scars)
+      g.lineStyle(1, 0x450a0a, 0.3);
+      g.lineBetween(s/2 + 5, s/3 + 3, s/2 + 10, s/3 + 12);
+      g.lineBetween(s/2 + 7, s/3 + 3, s/2 + 12, s/3 + 12);
+      // Danger symbol (bottom)
       g.fillStyle(0xef4444, 0.5);
-      g.fillTriangle(s/2, s - 12, s/2 - 5, s - 6, s/2 + 5, s - 6);
+      g.fillTriangle(s/2, s - 14, s/2 - 5, s - 7, s/2 + 5, s - 7);
+      g.fillStyle(0x000000, 0.5);
+      g.fillRect(s/2 - 0.5, s - 12, 1, 3);
+      g.fillCircle(s/2, s - 8, 0.8);
+      // Corner rivets
+      g.fillStyle(0x555555, 0.5);
+      g.fillCircle(8, s/3 + 4, 2);
+      g.fillCircle(s - 8, s/3 + 4, 2);
+      g.fillCircle(8, s - 6, 2);
+      g.fillCircle(s - 8, s - 6, 2);
       // Thick black outline
       g.lineStyle(3, 0x000000, 1);
       g.strokeRoundedRect(4, s/3, s - 8, s * 2/3 - 4, 6);
     });
 
-    // Zero-Day — fast yellow lightning bolt shape (bigger)
+    // Zero-Day — fast yellow lightning bolt shape (bigger, more electric)
     this.createDetailedUnit('zero-day', 36, (g, s) => {
-      // Glow aura
-      g.fillStyle(0xfbbf24, 0.12);
+      // Outer energy aura (double ring)
+      g.fillStyle(0xfbbf24, 0.08);
+      g.fillCircle(s/2, s/2, s/2 + 3);
+      g.fillStyle(0xfde68a, 0.12);
       g.fillCircle(s/2, s/2, s/2);
       // Lightning body
       g.fillStyle(0xfbbf24);
@@ -423,8 +521,8 @@ export class PreloadScene extends Phaser.Scene {
         s/2 + 1, s/2 + 2,
       ];
       g.fillPoints(this.toPoints(pts), true);
-      // Inner highlight
-      g.fillStyle(0xfde68a, 0.5);
+      // Inner highlight (brighter core)
+      g.fillStyle(0xfde68a, 0.6);
       const inner = [
         s/2 + 2, 4,
         s/2 - 5, s/2 - 1,
@@ -434,23 +532,41 @@ export class PreloadScene extends Phaser.Scene {
         s/2 + 1, s/2 + 2,
       ];
       g.fillPoints(this.toPoints(inner), true);
-      // Electric sparks
+      // White-hot center streak
+      g.fillStyle(0xffffff, 0.3);
+      g.fillRect(s/2 - 1, 6, 2, s - 12);
+      // Electric sparks (more, scattered)
       g.fillStyle(0xffffff, 0.9);
       g.fillCircle(s/2 - 5, s/4, 2);
       g.fillCircle(s/2 + 7, s * 3/4, 2);
       g.fillCircle(s/2 + 3, s/3, 1.5);
-      // Mini eyes on bolt
-      g.fillStyle(0x000000, 0.8);
-      g.fillCircle(s/2 - 2, s/2 - 4, 2);
-      g.fillCircle(s/2 + 4, s/2 - 4, 2);
+      g.fillCircle(s/2 - 7, s * 2/3, 1.5);
+      g.fillCircle(s/2 + 5, s/5, 1);
+      // Electric crackle lines
+      g.lineStyle(1, 0xffffff, 0.4);
+      g.lineBetween(s/2 - 3, s/4, s/2 - 8, s/4 - 3);
+      g.lineBetween(s/2 + 5, s * 3/4, s/2 + 10, s * 3/4 + 2);
+      // Mini eyes on bolt (bigger, angrier)
+      g.fillStyle(0xffffff, 0.9);
+      g.fillCircle(s/2 - 2, s/2 - 4, 3);
+      g.fillCircle(s/2 + 4, s/2 - 4, 3);
+      g.fillStyle(0x000000, 0.9);
+      g.fillCircle(s/2 - 1, s/2 - 3, 1.5);
+      g.fillCircle(s/2 + 5, s/2 - 3, 1.5);
+      // Angry brows
+      g.lineStyle(1.5, 0x92400e);
+      g.lineBetween(s/2 - 6, s/2 - 8, s/2 - 1, s/2 - 6);
+      g.lineBetween(s/2 + 8, s/2 - 8, s/2 + 3, s/2 - 6);
       // Thick outline
       g.lineStyle(3, 0x000000, 1);
       g.strokePoints(this.toPoints(pts), true);
     });
 
-    // Cryptominer — purple crystal/gem that drains resources (bigger)
+    // Cryptominer — purple crystal/gem that drains resources (bigger, more facets)
     this.createDetailedUnit('cryptominer', 40, (g, s) => {
-      // Glow aura
+      // Outer glow aura (double)
+      g.fillStyle(0x8b5cf6, 0.06);
+      g.fillCircle(s/2, s/2, s/2 + 3);
       g.fillStyle(0x8b5cf6, 0.1);
       g.fillCircle(s/2, s/2, s/2);
       // Gem body
@@ -464,24 +580,43 @@ export class PreloadScene extends Phaser.Scene {
         5, s/3,
       ];
       g.fillPoints(this.toPoints(gemPts), true);
-      // Inner facets (multi-layered)
+      // Inner facets (multi-layered, more detail)
       g.fillStyle(0xa78bfa, 0.5);
       g.fillTriangle(s/2, 8, s/2 + 12, s/2, s/2, s/2);
       g.fillStyle(0x7c3aed, 0.5);
       g.fillTriangle(s/2, 8, s/2, s/2, s/2 - 12, s/2);
       g.fillStyle(0xc4b5fd, 0.3);
       g.fillTriangle(s/2, s/2, s - 5, s * 2/3, s/2, s - 5);
-      // Sparkle highlights
+      g.fillStyle(0x6d28d9, 0.4);
+      g.fillTriangle(s/2, s/2, 3, s * 2/3, s/2, s - 5);
+      // Facet edge lines (crystal structure)
+      g.lineStyle(0.5, 0xc4b5fd, 0.3);
+      g.lineBetween(s/2, 6, s/2, s/2);
+      g.lineBetween(s/2, s/2, s - 5, s * 2/3);
+      g.lineBetween(s/2, s/2, 3, s * 2/3);
+      g.lineBetween(s/2, s/2, s/2, s - 5);
+      // Sparkle highlights (more)
       g.fillStyle(0xffffff, 0.9);
       g.fillCircle(s/2 - 5, s/3 + 2, 2.5);
       g.fillCircle(s/2 + 8, s/2, 1.5);
-      // Bitcoin symbol (bigger)
+      g.fillCircle(s/2 + 3, s/4, 1);
+      g.fillCircle(s/2 - 8, s * 2/3, 1);
+      // Bitcoin symbol (centered, bigger)
+      g.fillStyle(0xfbbf24, 0.2);
+      g.fillCircle(s/2, s/2 + 7, 7);
       g.lineStyle(2, 0xfbbf24);
-      g.lineBetween(s/2, s/2 + 2, s/2, s/2 + 12);
       g.strokeCircle(s/2, s/2 + 7, 5);
-      // "B" hint
-      g.fillStyle(0xfbbf24, 0.7);
-      g.fillCircle(s/2, s/2 + 7, 2);
+      // "B" letter
+      g.fillStyle(0xfbbf24, 0.8);
+      g.fillRect(s/2 - 2, s/2 + 4, 4, 6);
+      g.fillCircle(s/2 + 1, s/2 + 6, 2);
+      g.fillCircle(s/2 + 1, s/2 + 9, 2);
+      // Floating mote particles (static sparkles around gem)
+      g.fillStyle(0xc4b5fd, 0.5);
+      g.fillCircle(s/2 - 12, s/3, 1.5);
+      g.fillCircle(s/2 + 14, s/2 + 5, 1.5);
+      g.fillCircle(s/2 - 10, s * 2/3 + 5, 1);
+      g.fillCircle(s/2 + 12, s/4, 1);
       // Thick black outline
       g.lineStyle(3, 0x000000, 1);
       g.strokePoints(this.toPoints(gemPts), true);
@@ -922,6 +1057,37 @@ export class PreloadScene extends Phaser.Scene {
       g.fillStyle(0x22c55e, 0.4);
       g.fillCircle(W / 2, y + 4, 1.5);
     }
+
+    // -- Enemy tower platforms (raised dark platforms at top) --
+    for (const laneX of laneXPositions) {
+      // Platform shadow
+      g.fillStyle(0x000000, 0.3);
+      g.fillEllipse(laneX, 80, 60, 20);
+      // Raised base
+      g.fillStyle(0x3b1111);
+      g.fillEllipse(laneX, 78, 56, 18);
+      // Platform top
+      g.fillStyle(0x4a1515);
+      g.fillEllipse(laneX, 76, 52, 16);
+      // Red accent ring
+      g.lineStyle(1.5, 0xef4444, 0.25);
+      g.strokeEllipse(laneX, 76, 52, 16);
+      // Inner danger ring
+      g.lineStyle(1, 0xef4444, 0.12);
+      g.strokeEllipse(laneX, 76, 40, 12);
+    }
+
+    // -- Enemy main server platform (center, dark imposing) --
+    g.fillStyle(0x000000, 0.35);
+    g.fillEllipse(W / 2, 35, 80, 24);
+    g.fillStyle(0x3b1111);
+    g.fillEllipse(W / 2, 33, 76, 22);
+    g.fillStyle(0x4a1515);
+    g.fillEllipse(W / 2, 31, 72, 20);
+    g.lineStyle(2, 0xef4444, 0.3);
+    g.strokeEllipse(W / 2, 31, 72, 20);
+    g.lineStyle(1, 0xef4444, 0.15);
+    g.strokeEllipse(W / 2, 31, 56, 14);
 
     // -- Enemy spawn zone (data center server room — dark, menacing) --
     // Dark ceiling
