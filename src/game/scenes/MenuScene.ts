@@ -74,6 +74,18 @@ export class MenuScene extends Phaser.Scene {
       });
     }
 
+    // Horizontal scan line (CRT monitor effect)
+    const scanLine = this.add.graphics();
+    scanLine.fillStyle(0x22c55e, 0.04);
+    scanLine.fillRect(0, 0, GAME_WIDTH, 3);
+    this.tweens.add({
+      targets: scanLine,
+      y: GAME_HEIGHT,
+      duration: 4000,
+      repeat: -1,
+      ease: 'Linear',
+    });
+
     // ── Title banner ──
     // Banner background (Clash Royale style ribbon)
     const banner = this.add.graphics();
@@ -153,17 +165,49 @@ export class MenuScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     // ── Main server display ──
-    const mainServer = this.add.image(GAME_WIDTH / 2, 370, 'main-server').setScale(2.5);
-    // Glow behind it
-    const glow = this.add.circle(GAME_WIDTH / 2, 370, 60, 0xfbbf24, 0.08);
+    // Multiple glow rings (energy field)
+    const glow = this.add.circle(GAME_WIDTH / 2, 370, 60, 0xfbbf24, 0.06);
     this.tweens.add({
       targets: glow,
-      scaleX: { from: 1, to: 1.3 },
-      scaleY: { from: 1, to: 1.3 },
-      alpha: { from: 0.08, to: 0.02 },
+      scaleX: { from: 1, to: 1.4 },
+      scaleY: { from: 1, to: 1.4 },
+      alpha: { from: 0.06, to: 0.01 },
       duration: 2000,
       yoyo: true,
       repeat: -1,
+    });
+    const glow2 = this.add.circle(GAME_WIDTH / 2, 370, 40, 0x22c55e, 0.04);
+    this.tweens.add({
+      targets: glow2,
+      scaleX: { from: 1, to: 1.5 },
+      scaleY: { from: 1, to: 1.5 },
+      alpha: { from: 0.04, to: 0.01 },
+      duration: 2500,
+      yoyo: true,
+      repeat: -1,
+      delay: 500,
+    });
+
+    // Server hologram ring
+    const holoRing = this.add.graphics();
+    holoRing.lineStyle(1, 0xfbbf24, 0.15);
+    holoRing.strokeCircle(GAME_WIDTH / 2, 370, 55);
+    this.tweens.add({
+      targets: holoRing,
+      angle: 360,
+      duration: 8000,
+      repeat: -1,
+    });
+
+    const mainServer = this.add.image(GAME_WIDTH / 2, 370, 'main-server').setScale(2.5);
+    // Subtle float
+    this.tweens.add({
+      targets: mainServer,
+      y: 365,
+      duration: 2000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
     });
 
     // ── Battle / Deploy Button (Clash Royale orange) ──
