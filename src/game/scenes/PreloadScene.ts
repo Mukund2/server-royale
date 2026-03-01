@@ -20,352 +20,544 @@ export class PreloadScene extends Phaser.Scene {
     this.generateArena();
   }
 
-  // ── Player Units (warm, friendly, Supercell-style) ──
+  // ── Player Units (warm, friendly, Supercell-style — BIGGER, bouncier) ──
   private generatePlayerUnits() {
-    // Junior Tech — green guy with hard hat
-    this.createDetailedUnit('junior-tech', 28, (g, s) => {
-      // Body
+    // Junior Tech — green guy with hard hat (bigger, cuter)
+    this.createDetailedUnit('junior-tech', 38, (g, s) => {
+      // Shadow
+      g.fillStyle(0x000000, 0.2);
+      g.fillEllipse(s/2, s - 4, s/2 + 2, 6);
+      // Body (round, chubby)
       g.fillStyle(0x4ade80);
-      g.fillCircle(s/2, s/2 + 2, s/2 - 4);
+      g.fillCircle(s/2, s/2 + 3, s/2 - 5);
+      // Body highlight
+      g.fillStyle(0x6ee7a0, 0.5);
+      g.fillCircle(s/2 - 3, s/2 - 2, s/3);
       // Hard hat
       g.fillStyle(0xfbbf24);
-      g.fillRoundedRect(s/2 - 8, 1, 16, 8, 3);
-      g.fillRect(s/2 - 10, 7, 20, 3);
-      // Eyes
+      g.fillRoundedRect(s/2 - 11, 1, 22, 10, 4);
+      g.fillRect(s/2 - 13, 9, 26, 4);
+      // Hat highlight
+      g.fillStyle(0xfcd34d, 0.6);
+      g.fillRoundedRect(s/2 - 8, 3, 12, 5, 2);
+      // Big eyes (Supercell style)
       g.fillStyle(0xffffff);
-      g.fillCircle(s/2 - 4, s/2, 4);
-      g.fillCircle(s/2 + 4, s/2, 4);
+      g.fillCircle(s/2 - 6, s/2 - 1, 6);
+      g.fillCircle(s/2 + 6, s/2 - 1, 6);
+      // Pupils (looking right)
       g.fillStyle(0x1a1a2e);
-      g.fillCircle(s/2 - 3, s/2, 2);
-      g.fillCircle(s/2 + 5, s/2, 2);
-      // Mouth
-      g.fillStyle(0x166534);
-      g.fillRoundedRect(s/2 - 3, s/2 + 6, 6, 3, 1);
-      // Outline
-      g.lineStyle(2.5, 0x000000, 0.9);
-      g.strokeCircle(s/2, s/2 + 2, s/2 - 4);
+      g.fillCircle(s/2 - 4, s/2 - 1, 3);
+      g.fillCircle(s/2 + 8, s/2 - 1, 3);
+      // Eye shine
+      g.fillStyle(0xffffff, 0.8);
+      g.fillCircle(s/2 - 5, s/2 - 3, 1.5);
+      g.fillCircle(s/2 + 7, s/2 - 3, 1.5);
+      // Happy mouth
+      g.lineStyle(2, 0x166534);
+      g.beginPath();
+      g.arc(s/2, s/2 + 5, 5, 0.2, Math.PI - 0.2, false);
+      g.strokePath();
+      // Wrench in hand
+      g.fillStyle(0x94a3b8);
+      g.fillRect(s - 8, s/2 + 2, 3, 10);
+      g.fillCircle(s - 6, s/2 + 2, 3);
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
+      g.strokeCircle(s/2, s/2 + 3, s/2 - 5);
     });
 
-    // Senior Engineer — blue tanky square with glasses
-    this.createDetailedUnit('senior-engineer', 32, (g, s) => {
+    // Senior Engineer — blue tanky guy with glasses (bigger)
+    this.createDetailedUnit('senior-engineer', 42, (g, s) => {
+      // Shadow
+      g.fillStyle(0x000000, 0.2);
+      g.fillEllipse(s/2, s - 3, s/2, 6);
+      // Body (square-ish, tanky)
       g.fillStyle(0x3b82f6);
-      g.fillRoundedRect(3, 3, s - 6, s - 6, 5);
+      g.fillRoundedRect(4, 4, s - 8, s - 8, 7);
+      // Body highlight
+      g.fillStyle(0x60a5fa, 0.4);
+      g.fillRoundedRect(6, 6, s/2, s/2, 5);
       // Tie
       g.fillStyle(0xef4444);
-      g.fillTriangle(s/2, 14, s/2 - 3, 20, s/2 + 3, 20);
-      g.fillRect(s/2 - 1, 20, 2, 8);
-      // Glasses
-      g.lineStyle(2, 0x1e3a5f);
-      g.strokeCircle(s/2 - 5, s/2 - 3, 4);
-      g.strokeCircle(s/2 + 5, s/2 - 3, 4);
-      g.lineBetween(s/2 - 1, s/2 - 3, s/2 + 1, s/2 - 3);
-      // Eyes behind glasses
+      g.fillTriangle(s/2, 16, s/2 - 4, 24, s/2 + 4, 24);
+      g.fillRect(s/2 - 2, 24, 4, 10);
+      // Glasses (thick frames)
       g.fillStyle(0xffffff);
-      g.fillCircle(s/2 - 5, s/2 - 3, 3);
-      g.fillCircle(s/2 + 5, s/2 - 3, 3);
+      g.fillCircle(s/2 - 7, s/2 - 4, 5);
+      g.fillCircle(s/2 + 7, s/2 - 4, 5);
+      g.lineStyle(2.5, 0x1e3a5f);
+      g.strokeCircle(s/2 - 7, s/2 - 4, 5);
+      g.strokeCircle(s/2 + 7, s/2 - 4, 5);
+      g.lineBetween(s/2 - 2, s/2 - 4, s/2 + 2, s/2 - 4);
+      // Pupils
       g.fillStyle(0x1a1a2e);
-      g.fillCircle(s/2 - 4, s/2 - 3, 1.5);
-      g.fillCircle(s/2 + 6, s/2 - 3, 1.5);
-      // Outline
-      g.lineStyle(2.5, 0x000000, 0.9);
-      g.strokeRoundedRect(3, 3, s - 6, s - 6, 5);
+      g.fillCircle(s/2 - 6, s/2 - 4, 2);
+      g.fillCircle(s/2 + 8, s/2 - 4, 2);
+      // Eye shine
+      g.fillStyle(0xffffff, 0.8);
+      g.fillCircle(s/2 - 7, s/2 - 6, 1.5);
+      g.fillCircle(s/2 + 7, s/2 - 6, 1.5);
+      // Stern mouth
+      g.lineStyle(2, 0x1e3a8a);
+      g.lineBetween(s/2 - 4, s/2 + 6, s/2 + 4, s/2 + 6);
+      // Coffee mug
+      g.fillStyle(0xffffff);
+      g.fillRoundedRect(s - 12, s/2, 7, 9, 2);
+      g.lineStyle(1.5, 0x1e3a5f);
+      g.strokeRoundedRect(s - 12, s/2, 7, 9, 2);
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
+      g.strokeRoundedRect(4, 4, s - 8, s - 8, 7);
     });
 
-    // AI Bot — orange/gold with antenna
-    this.createDetailedUnit('ai-bot', 30, (g, s) => {
+    // AI Bot — orange/gold robot with antenna (bigger)
+    this.createDetailedUnit('ai-bot', 40, (g, s) => {
+      // Shadow
+      g.fillStyle(0x000000, 0.2);
+      g.fillEllipse(s/2, s - 3, s/2 - 2, 6);
       // Antenna
-      g.lineStyle(2, 0x666666);
-      g.lineBetween(s/2, 0, s/2, 6);
+      g.lineStyle(2.5, 0x888888);
+      g.lineBetween(s/2, 0, s/2, 8);
       g.fillStyle(0xff0000);
-      g.fillCircle(s/2, 2, 3);
-      // Head
+      g.fillCircle(s/2, 2, 4);
+      g.fillStyle(0xff6666, 0.5);
+      g.fillCircle(s/2 - 1, 1, 2);
+      // Head body
       g.fillStyle(0xf97316);
-      g.fillRoundedRect(4, 6, s - 8, s - 10, 4);
+      g.fillRoundedRect(5, 8, s - 10, s - 14, 6);
+      // Body highlight
+      g.fillStyle(0xfb923c, 0.4);
+      g.fillRoundedRect(7, 10, s/2 - 4, s/2 - 4, 4);
       // Screen face
       g.fillStyle(0x0a0a1a);
-      g.fillRoundedRect(8, 10, s - 16, s/2 - 6, 3);
-      // LED eyes
+      g.fillRoundedRect(10, 13, s - 20, s/2 - 6, 4);
+      // Screen glow
+      g.fillStyle(0x22ff88, 0.1);
+      g.fillRoundedRect(11, 14, s - 22, s/2 - 8, 3);
+      // LED eyes (bigger, glowing)
       g.fillStyle(0x22ff88);
-      g.fillRect(s/2 - 5, 14, 3, 3);
-      g.fillRect(s/2 + 3, 14, 3, 3);
-      // Mouth line
-      g.lineStyle(1, 0x22ff88);
-      g.lineBetween(s/2 - 4, 20, s/2 + 4, 20);
+      g.fillRoundedRect(s/2 - 8, 17, 5, 5, 1);
+      g.fillRoundedRect(s/2 + 3, 17, 5, 5, 1);
+      // Eye glow
+      g.fillStyle(0x22ff88, 0.3);
+      g.fillCircle(s/2 - 5, 19, 5);
+      g.fillCircle(s/2 + 5, 19, 5);
+      // Mouth (digital smile)
+      g.lineStyle(1.5, 0x22ff88);
+      g.lineBetween(s/2 - 6, 26, s/2 - 3, 26);
+      g.lineBetween(s/2 - 3, 26, s/2 - 3, 28);
+      g.lineBetween(s/2 - 3, 28, s/2 + 3, 28);
+      g.lineBetween(s/2 + 3, 28, s/2 + 3, 26);
+      g.lineBetween(s/2 + 3, 26, s/2 + 6, 26);
       // Body bolts
+      g.fillStyle(0xaaaaaa);
+      g.fillCircle(10, s - 10, 3);
+      g.fillCircle(s - 10, s - 10, 3);
       g.fillStyle(0x888888);
-      g.fillCircle(8, s - 8, 2);
-      g.fillCircle(s - 8, s - 8, 2);
-      // Outline
-      g.lineStyle(2.5, 0x000000, 0.9);
-      g.strokeRoundedRect(4, 6, s - 8, s - 10, 4);
+      g.fillCircle(10, s - 10, 1.5);
+      g.fillCircle(s - 10, s - 10, 1.5);
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
+      g.strokeRoundedRect(5, 8, s - 10, s - 14, 6);
     });
 
-    // Firewall — thick wall with glowing runes
-    this.createDetailedUnit('firewall', 40, (g, s) => {
-      const h = 20;
+    // Firewall — thick wall with glowing runes (wider, more imposing)
+    this.createDetailedUnit('firewall', 50, (g, s) => {
+      const h = 28;
       const y0 = (s - h) / 2;
+      // Shadow
+      g.fillStyle(0x000000, 0.2);
+      g.fillRoundedRect(4, y0 + 4, s - 4, h, 4);
       // Wall body
       g.fillStyle(0x64748b);
-      g.fillRoundedRect(2, y0, s - 4, h, 3);
-      // Bricks
-      g.lineStyle(1, 0x475569);
-      g.lineBetween(2, y0 + h/2, s - 2, y0 + h/2);
-      for (let i = 1; i < 4; i++) {
+      g.fillRoundedRect(2, y0, s - 4, h, 4);
+      // Wall highlight
+      g.fillStyle(0x94a3b8, 0.3);
+      g.fillRoundedRect(4, y0 + 1, s - 8, h / 3, 3);
+      // Bricks pattern
+      g.lineStyle(1, 0x475569, 0.6);
+      g.lineBetween(2, y0 + h/3, s - 2, y0 + h/3);
+      g.lineBetween(2, y0 + 2*h/3, s - 2, y0 + 2*h/3);
+      for (let i = 1; i < 5; i++) {
         const xOff = (i % 2 === 0) ? 5 : 0;
-        g.lineBetween(xOff + i * (s-4)/4, y0, xOff + i * (s-4)/4, y0 + h/2);
+        g.lineBetween(xOff + i * (s-4)/5, y0, xOff + i * (s-4)/5, y0 + h/3);
+        g.lineBetween(xOff + 3 + i * (s-4)/5, y0 + h/3, xOff + 3 + i * (s-4)/5, y0 + 2*h/3);
       }
-      // Glow runes
-      g.fillStyle(0x38bdf8, 0.7);
-      g.fillCircle(10, s/2, 2);
-      g.fillCircle(20, s/2, 2);
-      g.fillCircle(30, s/2, 2);
-      // Shield icon center
-      g.lineStyle(1.5, 0x38bdf8, 0.9);
-      g.strokeCircle(s/2, s/2, 5);
-      // Outline
-      g.lineStyle(2.5, 0x000000, 0.9);
-      g.strokeRoundedRect(2, y0, s - 4, h, 3);
-    }, 40, 40);
+      // Glow runes (shield pattern)
+      g.fillStyle(0x38bdf8, 0.8);
+      g.fillCircle(12, s/2, 3);
+      g.fillCircle(s/2, s/2, 3);
+      g.fillCircle(s - 12, s/2, 3);
+      // Shield icon center (bigger)
+      g.lineStyle(2, 0x38bdf8, 1);
+      g.strokeCircle(s/2, s/2, 7);
+      g.fillStyle(0x38bdf8, 0.3);
+      g.fillCircle(s/2, s/2, 7);
+      // Glow effect
+      g.fillStyle(0x38bdf8, 0.1);
+      g.fillCircle(s/2, s/2, 14);
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
+      g.strokeRoundedRect(2, y0, s - 4, h, 4);
+    }, 50, 50);
 
-    // Cooling System — spinning cyan fan
-    this.createDetailedUnit('cooling-system', 30, (g, s) => {
+    // Cooling System — spinning cyan fan (bigger)
+    this.createDetailedUnit('cooling-system', 40, (g, s) => {
+      // Shadow
+      g.fillStyle(0x000000, 0.2);
+      g.fillEllipse(s/2, s - 3, s/2, 5);
       // Base plate
       g.fillStyle(0x334155);
-      g.fillCircle(s/2, s/2, s/2 - 2);
-      // Fan center
-      g.fillStyle(0x0ea5e9);
-      g.fillCircle(s/2, s/2, 4);
-      // Fan blades
-      g.fillStyle(0x22d3ee, 0.8);
+      g.fillCircle(s/2, s/2, s/2 - 3);
+      // Plate highlight
+      g.fillStyle(0x475569, 0.4);
+      g.fillCircle(s/2 - 3, s/2 - 3, s/3);
+      // Fan blades (bigger, more detailed)
+      g.fillStyle(0x22d3ee, 0.85);
       for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 2) {
-        const x1 = s/2 + Math.cos(angle) * 4;
-        const y1 = s/2 + Math.sin(angle) * 4;
-        const x2 = s/2 + Math.cos(angle + 0.6) * 12;
-        const y2 = s/2 + Math.sin(angle + 0.6) * 12;
-        const x3 = s/2 + Math.cos(angle - 0.2) * 12;
-        const y3 = s/2 + Math.sin(angle - 0.2) * 12;
+        const cx = s/2, cy = s/2;
+        const x1 = cx + Math.cos(angle) * 5;
+        const y1 = cy + Math.sin(angle) * 5;
+        const x2 = cx + Math.cos(angle + 0.5) * 15;
+        const y2 = cy + Math.sin(angle + 0.5) * 15;
+        const x3 = cx + Math.cos(angle - 0.2) * 15;
+        const y3 = cy + Math.sin(angle - 0.2) * 15;
         g.fillTriangle(x1, y1, x2, y2, x3, y3);
       }
+      // Fan center hub
+      g.fillStyle(0x0ea5e9);
+      g.fillCircle(s/2, s/2, 6);
+      g.fillStyle(0x38bdf8, 0.5);
+      g.fillCircle(s/2 - 1, s/2 - 1, 3);
       // Frost particles
-      g.fillStyle(0xbae6fd, 0.6);
-      g.fillCircle(s/2 - 8, s/2 - 8, 2);
-      g.fillCircle(s/2 + 9, s/2 - 6, 1.5);
-      g.fillCircle(s/2 - 6, s/2 + 9, 1.5);
-      // Outline
-      g.lineStyle(2.5, 0x000000, 0.9);
-      g.strokeCircle(s/2, s/2, s/2 - 2);
+      g.fillStyle(0xbae6fd, 0.7);
+      g.fillCircle(s/2 - 10, s/2 - 10, 2.5);
+      g.fillCircle(s/2 + 12, s/2 - 8, 2);
+      g.fillCircle(s/2 - 8, s/2 + 12, 2);
+      g.fillCircle(s/2 + 10, s/2 + 10, 1.5);
+      // Frost glow
+      g.fillStyle(0x22d3ee, 0.1);
+      g.fillCircle(s/2, s/2, s/2);
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
+      g.strokeCircle(s/2, s/2, s/2 - 3);
     });
   }
 
-  // ── Enemy Units (menacing, hot, Clash Royale villain style) ──
+  // ── Enemy Units (menacing, hot, Clash Royale villain style — BIGGER) ──
   private generateEnemyUnits() {
-    // Heat Creep — fiery red blob with angry eyes
-    this.createDetailedUnit('heat-creep', 28, (g, s) => {
-      // Fire aura
-      g.fillStyle(0xff6b00, 0.3);
+    // Heat Creep — fiery red blob with angry eyes (bigger)
+    this.createDetailedUnit('heat-creep', 38, (g, s) => {
+      // Fire aura glow
+      g.fillStyle(0xff6b00, 0.15);
       g.fillCircle(s/2, s/2, s/2);
       // Body
       g.fillStyle(0xef4444);
-      g.fillCircle(s/2, s/2 + 1, s/2 - 4);
-      // Flame top
+      g.fillCircle(s/2, s/2 + 2, s/2 - 5);
+      // Body highlight
+      g.fillStyle(0xf87171, 0.4);
+      g.fillCircle(s/2 - 3, s/2 - 2, s/3);
+      // Flame crown (multiple flames)
       g.fillStyle(0xff8c00);
-      g.fillTriangle(s/2, 1, s/2 - 5, 8, s/2 + 5, 8);
-      g.fillTriangle(s/2 - 4, 3, s/2 - 8, 10, s/2, 10);
-      g.fillTriangle(s/2 + 4, 3, s/2, 10, s/2 + 8, 10);
-      // Angry eyes
+      g.fillTriangle(s/2, 0, s/2 - 6, 10, s/2 + 6, 10);
+      g.fillStyle(0xfbbf24);
+      g.fillTriangle(s/2, 2, s/2 - 4, 9, s/2 + 4, 9);
+      g.fillStyle(0xff8c00);
+      g.fillTriangle(s/2 - 6, 2, s/2 - 11, 12, s/2 - 1, 12);
+      g.fillTriangle(s/2 + 6, 2, s/2 + 1, 12, s/2 + 11, 12);
+      g.fillStyle(0xfbbf24, 0.6);
+      g.fillTriangle(s/2 - 5, 4, s/2 - 9, 11, s/2 - 2, 11);
+      g.fillTriangle(s/2 + 5, 4, s/2 + 2, 11, s/2 + 9, 11);
+      // Angry eyes (big, expressive)
       g.fillStyle(0xffffff);
-      g.fillCircle(s/2 - 4, s/2, 4);
-      g.fillCircle(s/2 + 4, s/2, 4);
+      g.fillCircle(s/2 - 6, s/2, 6);
+      g.fillCircle(s/2 + 6, s/2, 6);
+      // Angry pupils
       g.fillStyle(0x1a1a2e);
-      g.fillCircle(s/2 - 3, s/2 + 1, 2);
-      g.fillCircle(s/2 + 5, s/2 + 1, 2);
-      // Angry brows
+      g.fillCircle(s/2 - 5, s/2 + 1, 3);
+      g.fillCircle(s/2 + 7, s/2 + 1, 3);
+      // Eye shine
+      g.fillStyle(0xffffff, 0.7);
+      g.fillCircle(s/2 - 7, s/2 - 2, 1.5);
+      g.fillCircle(s/2 + 5, s/2 - 2, 1.5);
+      // Angry brows (thick, dramatic)
+      g.lineStyle(2.5, 0x7f1d1d);
+      g.lineBetween(s/2 - 12, s/2 - 7, s/2 - 2, s/2 - 4);
+      g.lineBetween(s/2 + 12, s/2 - 7, s/2 + 2, s/2 - 4);
+      // Grumpy mouth
       g.lineStyle(2, 0x7f1d1d);
-      g.lineBetween(s/2 - 8, s/2 - 5, s/2 - 1, s/2 - 3);
-      g.lineBetween(s/2 + 8, s/2 - 5, s/2 + 1, s/2 - 3);
-      // Outline
-      g.lineStyle(2.5, 0x000000, 0.9);
-      g.strokeCircle(s/2, s/2 + 1, s/2 - 4);
+      g.beginPath();
+      g.arc(s/2, s/2 + 12, 5, Math.PI + 0.3, -0.3, false);
+      g.strokePath();
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
+      g.strokeCircle(s/2, s/2 + 2, s/2 - 5);
     });
 
-    // DDoS mini — tiny pink skull
-    this.createDetailedUnit('ddos-mini', 16, (g, s) => {
+    // DDoS mini — tiny pink skull (slightly bigger)
+    this.createDetailedUnit('ddos-mini', 20, (g, s) => {
       g.fillStyle(0xf472b6);
-      g.fillCircle(s/2, s/2, s/2 - 1);
-      // Eyes (X marks)
-      g.lineStyle(1.5, 0x1a1a2e);
-      g.lineBetween(s/2 - 4, s/2 - 2, s/2 - 1, s/2 + 1);
-      g.lineBetween(s/2 - 1, s/2 - 2, s/2 - 4, s/2 + 1);
-      g.lineBetween(s/2 + 1, s/2 - 2, s/2 + 4, s/2 + 1);
-      g.lineBetween(s/2 + 4, s/2 - 2, s/2 + 1, s/2 + 1);
-      // Outline
-      g.lineStyle(2, 0x000000, 0.9);
-      g.strokeCircle(s/2, s/2, s/2 - 1);
+      g.fillCircle(s/2, s/2, s/2 - 2);
+      // Highlight
+      g.fillStyle(0xf9a8d4, 0.4);
+      g.fillCircle(s/2 - 2, s/2 - 2, s/4);
+      // Eyes (X marks, bigger)
+      g.lineStyle(2, 0x1a1a2e);
+      g.lineBetween(s/2 - 5, s/2 - 3, s/2 - 1, s/2 + 1);
+      g.lineBetween(s/2 - 1, s/2 - 3, s/2 - 5, s/2 + 1);
+      g.lineBetween(s/2 + 1, s/2 - 3, s/2 + 5, s/2 + 1);
+      g.lineBetween(s/2 + 5, s/2 - 3, s/2 + 1, s/2 + 1);
+      // Thick outline
+      g.lineStyle(2.5, 0x000000, 1);
+      g.strokeCircle(s/2, s/2, s/2 - 2);
     });
 
-    // Ransomware — big dark menacing lock
-    this.createDetailedUnit('ransomware', 36, (g, s) => {
+    // Ransomware — big dark menacing lock (bigger, scarier)
+    this.createDetailedUnit('ransomware', 46, (g, s) => {
+      // Shadow
+      g.fillStyle(0x000000, 0.2);
+      g.fillRoundedRect(6, s/3 + 4, s - 8, s * 2/3 - 4, 6);
       // Body
       g.fillStyle(0x7f1d1d);
-      g.fillRoundedRect(4, s/3, s - 8, s * 2/3 - 4, 5);
-      // Lock shackle
-      g.lineStyle(4, 0x991b1b);
+      g.fillRoundedRect(4, s/3, s - 8, s * 2/3 - 4, 6);
+      // Body gradient
+      g.fillStyle(0x991b1b, 0.4);
+      g.fillRoundedRect(6, s/3 + 2, s - 12, s/3 - 2, 4);
+      // Lock shackle (thicker)
+      g.lineStyle(5, 0x991b1b);
       g.beginPath();
-      g.arc(s/2, s/3, 8, Math.PI, 0, false);
+      g.arc(s/2, s/3, 10, Math.PI, 0, false);
       g.strokePath();
-      // Keyhole
+      // Shackle highlight
+      g.lineStyle(2, 0xb91c1c, 0.5);
+      g.beginPath();
+      g.arc(s/2, s/3, 8, Math.PI + 0.3, -0.3, false);
+      g.strokePath();
+      // Keyhole (bigger, glowing)
+      g.fillStyle(0xfbbf24, 0.3);
+      g.fillCircle(s/2, s/2 + 5, 8);
       g.fillStyle(0xfbbf24);
-      g.fillCircle(s/2, s/2 + 4, 4);
-      g.fillRect(s/2 - 1.5, s/2 + 6, 3, 6);
-      // Skull decoration
-      g.fillStyle(0xef4444, 0.6);
-      g.fillCircle(s/2 - 8, s/3 + 8, 2);
-      g.fillCircle(s/2 + 8, s/3 + 8, 2);
-      // Outline
-      g.lineStyle(2.5, 0x000000, 0.9);
-      g.strokeRoundedRect(4, s/3, s - 8, s * 2/3 - 4, 5);
+      g.fillCircle(s/2, s/2 + 4, 5);
+      g.fillRect(s/2 - 2, s/2 + 7, 4, 8);
+      // Skull decoration eyes
+      g.fillStyle(0xef4444, 0.7);
+      g.fillCircle(s/2 - 10, s/3 + 10, 3);
+      g.fillCircle(s/2 + 10, s/3 + 10, 3);
+      // Danger symbol
+      g.fillStyle(0xef4444, 0.5);
+      g.fillTriangle(s/2, s - 12, s/2 - 5, s - 6, s/2 + 5, s - 6);
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
+      g.strokeRoundedRect(4, s/3, s - 8, s * 2/3 - 4, 6);
     });
 
-    // Zero-Day — fast yellow lightning bolt shape
-    this.createDetailedUnit('zero-day', 26, (g, s) => {
-      // Glow
-      g.fillStyle(0xfbbf24, 0.2);
+    // Zero-Day — fast yellow lightning bolt shape (bigger)
+    this.createDetailedUnit('zero-day', 36, (g, s) => {
+      // Glow aura
+      g.fillStyle(0xfbbf24, 0.12);
       g.fillCircle(s/2, s/2, s/2);
       // Lightning body
       g.fillStyle(0xfbbf24);
       const pts = [
-        s/2 + 2, 0,
-        s/2 - 6, s/2,
-        s/2 - 1, s/2,
-        s/2 - 4, s,
-        s/2 + 6, s/2 + 2,
+        s/2 + 3, 0,
+        s/2 - 8, s/2 - 1,
+        s/2 - 1, s/2 - 1,
+        s/2 - 6, s,
+        s/2 + 8, s/2 + 2,
         s/2 + 1, s/2 + 2,
       ];
       g.fillPoints(this.toPoints(pts), true);
+      // Inner highlight
+      g.fillStyle(0xfde68a, 0.5);
+      const inner = [
+        s/2 + 2, 4,
+        s/2 - 5, s/2 - 1,
+        s/2, s/2 - 1,
+        s/2 - 3, s - 4,
+        s/2 + 5, s/2 + 2,
+        s/2 + 1, s/2 + 2,
+      ];
+      g.fillPoints(this.toPoints(inner), true);
       // Electric sparks
-      g.fillStyle(0xffffff, 0.8);
-      g.fillCircle(s/2 - 4, s/4, 1.5);
-      g.fillCircle(s/2 + 5, s * 3/4, 1.5);
-      // Outline
-      g.lineStyle(2, 0x000000, 0.9);
+      g.fillStyle(0xffffff, 0.9);
+      g.fillCircle(s/2 - 5, s/4, 2);
+      g.fillCircle(s/2 + 7, s * 3/4, 2);
+      g.fillCircle(s/2 + 3, s/3, 1.5);
+      // Mini eyes on bolt
+      g.fillStyle(0x000000, 0.8);
+      g.fillCircle(s/2 - 2, s/2 - 4, 2);
+      g.fillCircle(s/2 + 4, s/2 - 4, 2);
+      // Thick outline
+      g.lineStyle(3, 0x000000, 1);
       g.strokePoints(this.toPoints(pts), true);
     });
 
-    // Cryptominer — purple crystal/gem that drains resources
-    this.createDetailedUnit('cryptominer', 30, (g, s) => {
+    // Cryptominer — purple crystal/gem that drains resources (bigger)
+    this.createDetailedUnit('cryptominer', 40, (g, s) => {
+      // Glow aura
+      g.fillStyle(0x8b5cf6, 0.1);
+      g.fillCircle(s/2, s/2, s/2);
       // Gem body
       g.fillStyle(0x8b5cf6);
       const gemPts = [
-        s/2, 2,
-        s - 4, s/3,
-        s - 2, s * 2/3,
-        s/2, s - 2,
-        2, s * 2/3,
-        4, s/3,
+        s/2, 3,
+        s - 5, s/3,
+        s - 3, s * 2/3,
+        s/2, s - 3,
+        3, s * 2/3,
+        5, s/3,
       ];
       g.fillPoints(this.toPoints(gemPts), true);
-      // Inner facets
+      // Inner facets (multi-layered)
       g.fillStyle(0xa78bfa, 0.5);
-      g.fillTriangle(s/2, 6, s/2 + 8, s/2, s/2, s/2);
+      g.fillTriangle(s/2, 8, s/2 + 12, s/2, s/2, s/2);
       g.fillStyle(0x7c3aed, 0.5);
-      g.fillTriangle(s/2, 6, s/2, s/2, s/2 - 8, s/2);
-      // Sparkle
-      g.fillStyle(0xffffff, 0.8);
-      g.fillCircle(s/2 - 3, s/3, 2);
-      // Bitcoin symbol
-      g.lineStyle(1.5, 0xfbbf24);
-      g.lineBetween(s/2, s/2 + 2, s/2, s/2 + 8);
-      g.strokeCircle(s/2, s/2 + 5, 4);
-      // Outline
-      g.lineStyle(2.5, 0x000000, 0.9);
+      g.fillTriangle(s/2, 8, s/2, s/2, s/2 - 12, s/2);
+      g.fillStyle(0xc4b5fd, 0.3);
+      g.fillTriangle(s/2, s/2, s - 5, s * 2/3, s/2, s - 5);
+      // Sparkle highlights
+      g.fillStyle(0xffffff, 0.9);
+      g.fillCircle(s/2 - 5, s/3 + 2, 2.5);
+      g.fillCircle(s/2 + 8, s/2, 1.5);
+      // Bitcoin symbol (bigger)
+      g.lineStyle(2, 0xfbbf24);
+      g.lineBetween(s/2, s/2 + 2, s/2, s/2 + 12);
+      g.strokeCircle(s/2, s/2 + 7, 5);
+      // "B" hint
+      g.fillStyle(0xfbbf24, 0.7);
+      g.fillCircle(s/2, s/2 + 7, 2);
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
       g.strokePoints(this.toPoints(gemPts), true);
     });
   }
 
-  // ── Towers ──
+  // ── Towers (imposing, detailed, Clash Royale style) ──
   private generateTowers() {
-    // Server Rack (lane tower)
+    // Server Rack (lane tower — bigger, more detailed)
     {
-      const w = 48, h = 58;
+      const w = 56, h = 68;
       const g = this.add.graphics();
       // Shadow
-      g.fillStyle(0x000000, 0.3);
-      g.fillRoundedRect(4, 6, w, h, 6);
+      g.fillStyle(0x000000, 0.35);
+      g.fillRoundedRect(5, 7, w, h, 7);
       // Main body
-      const grad = 0x475569;
-      g.fillStyle(grad);
-      g.fillRoundedRect(2, 2, w, h, 6);
-      // Front panel lighter
+      g.fillStyle(0x475569);
+      g.fillRoundedRect(2, 2, w, h, 7);
+      // Body highlight
+      g.fillStyle(0x64748b, 0.5);
+      g.fillRoundedRect(4, 4, w/2, h/3, 5);
+      // Front panel
       g.fillStyle(0x64748b);
-      g.fillRoundedRect(6, 6, w - 8, h - 8, 4);
-      // Server slots
-      for (let i = 0; i < 4; i++) {
-        const slotY = 10 + i * 12;
+      g.fillRoundedRect(6, 6, w - 8, h - 8, 5);
+      // Server slots (5 slots)
+      for (let i = 0; i < 5; i++) {
+        const slotY = 10 + i * 11;
         g.fillStyle(0x334155);
         g.fillRoundedRect(9, slotY, w - 14, 9, 2);
-        // Status lights
+        // Status lights (3 per slot)
         g.fillStyle(0x22c55e);
-        g.fillCircle(14, slotY + 4.5, 2);
-        g.fillStyle(0x22c55e, 0.5);
+        g.fillCircle(14, slotY + 4.5, 2.5);
+        // Light glow
+        g.fillStyle(0x22c55e, 0.3);
+        g.fillCircle(14, slotY + 4.5, 4);
+        g.fillStyle(0x22c55e, 0.4);
         g.fillCircle(20, slotY + 4.5, 2);
+        g.fillStyle(0xfbbf24, 0.5);
+        g.fillCircle(26, slotY + 4.5, 2);
         // Drive bays
         g.fillStyle(0x1e293b);
-        g.fillRect(26, slotY + 1, 12, 7);
-        g.lineStyle(0.5, 0x475569);
-        g.lineBetween(30, slotY + 1, 30, slotY + 8);
-        g.lineBetween(34, slotY + 1, 34, slotY + 8);
+        g.fillRect(32, slotY + 1, 14, 7);
+        g.lineStyle(0.5, 0x475569, 0.6);
+        g.lineBetween(36, slotY + 1, 36, slotY + 8);
+        g.lineBetween(40, slotY + 1, 40, slotY + 8);
+        g.lineBetween(44, slotY + 1, 44, slotY + 8);
       }
       // Top vent
-      g.lineStyle(1, 0x334155);
-      for (let x = 10; x < w - 6; x += 4) {
+      g.lineStyle(1.5, 0x334155);
+      for (let x = 10; x < w - 4; x += 4) {
         g.lineBetween(x, 4, x + 2, 4);
       }
-      // Outline
-      g.lineStyle(3, 0x000000, 0.9);
-      g.strokeRoundedRect(2, 2, w, h, 6);
-      g.generateTexture('server-rack', w + 6, h + 8);
+      // Bottom feet
+      g.fillStyle(0x334155);
+      g.fillRect(8, h - 2, 8, 3);
+      g.fillRect(w - 12, h - 2, 8, 3);
+      // Thick black outline
+      g.lineStyle(3, 0x000000, 1);
+      g.strokeRoundedRect(2, 2, w, h, 7);
+      g.generateTexture('server-rack', w + 8, h + 10);
       g.destroy();
     }
 
-    // Main Server (king tower - bigger, golden)
+    // Main Server (king tower — bigger, golden, impressive)
     {
-      const w = 70, h = 64;
+      const w = 80, h = 76;
       const g = this.add.graphics();
       // Shadow
-      g.fillStyle(0x000000, 0.3);
-      g.fillRoundedRect(4, 6, w, h, 8);
+      g.fillStyle(0x000000, 0.35);
+      g.fillRoundedRect(5, 8, w, h, 10);
       // Main body
       g.fillStyle(0x78716c);
-      g.fillRoundedRect(2, 2, w, h, 8);
-      // Gold trim
+      g.fillRoundedRect(2, 2, w, h, 10);
+      // Body highlight
+      g.fillStyle(0x8b8580, 0.4);
+      g.fillRoundedRect(4, 4, w/2, h/3, 8);
+      // Gold trim (top & bottom)
       g.fillStyle(0xfbbf24);
-      g.fillRoundedRect(2, 2, w, 6, { tl: 8, tr: 8, bl: 0, br: 0 });
-      g.fillRoundedRect(2, h - 4, w, 4, { tl: 0, tr: 0, bl: 8, br: 8 });
+      g.fillRoundedRect(2, 2, w, 8, { tl: 10, tr: 10, bl: 0, br: 0 });
+      g.fillRoundedRect(2, h - 6, w, 6, { tl: 0, tr: 0, bl: 10, br: 10 });
+      // Gold trim highlight
+      g.fillStyle(0xfcd34d, 0.5);
+      g.fillRoundedRect(4, 3, w - 4, 4, { tl: 8, tr: 8, bl: 0, br: 0 });
       // Front panel
       g.fillStyle(0x57534e);
-      g.fillRoundedRect(8, 12, w - 12, h - 18, 4);
-      // Big server slots
-      for (let i = 0; i < 3; i++) {
-        const slotY = 16 + i * 14;
+      g.fillRoundedRect(8, 14, w - 12, h - 24, 5);
+      // Big server slots (4 slots)
+      for (let i = 0; i < 4; i++) {
+        const slotY = 18 + i * 13;
         g.fillStyle(0x292524);
-        g.fillRoundedRect(12, slotY, w - 20, 11, 2);
-        // Lights
+        g.fillRoundedRect(12, slotY, w - 20, 10, 2);
+        // Traffic light indicators
         g.fillStyle(0xef4444);
-        g.fillCircle(18, slotY + 5.5, 2.5);
+        g.fillCircle(18, slotY + 5, 2.5);
+        g.fillStyle(0xef4444, 0.3);
+        g.fillCircle(18, slotY + 5, 4);
         g.fillStyle(0xfbbf24);
-        g.fillCircle(24, slotY + 5.5, 2.5);
+        g.fillCircle(25, slotY + 5, 2.5);
+        g.fillStyle(0xfbbf24, 0.3);
+        g.fillCircle(25, slotY + 5, 4);
         g.fillStyle(0x22c55e);
-        g.fillCircle(30, slotY + 5.5, 2.5);
+        g.fillCircle(32, slotY + 5, 2.5);
+        g.fillStyle(0x22c55e, 0.3);
+        g.fillCircle(32, slotY + 5, 4);
+        // Drive bays
+        g.fillStyle(0x1e293b);
+        g.fillRect(40, slotY + 1, 20, 8);
       }
-      // Crown/star emblem (manual diamond)
+      // Crown/star emblem (bigger, more detailed)
+      const cx = w/2 + 1, cy = h - 16;
+      // Emblem glow
+      g.fillStyle(0xfbbf24, 0.2);
+      g.fillCircle(cx, cy, 12);
+      // Star shape
       g.fillStyle(0xfbbf24);
-      const cx = w/2 + 1, cy = h - 12, sr = 6;
-      g.fillTriangle(cx, cy - sr, cx - sr, cy, cx + sr, cy);
-      g.fillTriangle(cx, cy + sr, cx - sr, cy, cx + sr, cy);
-      // Outline
-      g.lineStyle(3, 0x000000, 0.9);
-      g.strokeRoundedRect(2, 2, w, h, 8);
-      g.generateTexture('main-server', w + 6, h + 8);
+      g.fillTriangle(cx, cy - 8, cx - 8, cy, cx + 8, cy);
+      g.fillTriangle(cx, cy + 8, cx - 8, cy, cx + 8, cy);
+      // Star inner
+      g.fillStyle(0xfde68a, 0.6);
+      g.fillTriangle(cx, cy - 5, cx - 5, cy, cx + 5, cy);
+      g.fillTriangle(cx, cy + 5, cx - 5, cy, cx + 5, cy);
+      // Star center
+      g.fillStyle(0xffffff, 0.4);
+      g.fillCircle(cx, cy, 3);
+      // Bottom feet
+      g.fillStyle(0x57534e);
+      g.fillRect(10, h - 2, 10, 4);
+      g.fillRect(w - 16, h - 2, 10, 4);
+      // Thick black outline
+      g.lineStyle(3.5, 0x000000, 1);
+      g.strokeRoundedRect(2, 2, w, h, 10);
+      g.generateTexture('main-server', w + 8, h + 12);
       g.destroy();
     }
   }
