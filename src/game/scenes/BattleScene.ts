@@ -48,6 +48,10 @@ export class BattleScene extends Phaser.Scene {
   private deployIndicator!: Phaser.GameObjects.Graphics;
   private isDeploying: boolean = false;
 
+  // Tower shooting
+  private towerShootTimer: number = 0;
+  private towerRangeGraphics!: Phaser.GameObjects.Graphics;
+
   constructor() {
     super({ key: 'BattleScene' });
   }
@@ -114,6 +118,9 @@ export class BattleScene extends Phaser.Scene {
       this.triggerWave();
     });
 
+    // Tower range indicator graphics
+    this.towerRangeGraphics = this.add.graphics().setDepth(4);
+
     // Deploy zone markers (subtle dashed lines)
     const zoneGfx = this.add.graphics().setDepth(5);
     zoneGfx.lineStyle(1, 0x4ade80, 0.15);
@@ -164,6 +171,16 @@ export class BattleScene extends Phaser.Scene {
         player.die();
       }
     }
+
+    // Tower shooting at enemies
+    this.towerShootTimer += delta;
+    if (this.towerShootTimer >= 2000) {
+      this.towerShootTimer = 0;
+      this.towerShootAtEnemies();
+    }
+
+    // Tower range indicators (subtle)
+    this.drawTowerRanges();
 
     // UI update
     this.hud.update(this.budgetSystem, this.waveSystem);
@@ -577,6 +594,85 @@ export class BattleScene extends Phaser.Scene {
       this.deployIndicator.strokeCircle(pointer.x, pointer.y, 18);
       this.deployIndicator.lineBetween(pointer.x - 6, pointer.y - 6, pointer.x + 6, pointer.y + 6);
       this.deployIndicator.lineBetween(pointer.x + 6, pointer.y - 6, pointer.x - 6, pointer.y + 6);
+    }
+  }
+
+  private towerShootAtEnemies() {
+    const enemies = this.enemyUnits.getChildren() as Unit[];
+    const activeEnemies = enemies.filter(e => e.active);
+    const TOWER_RANGE = 120;
+    const TOWER_DPS = 20;
+
+    for (const tower of this.towers) {
+      if (tower.isDestroyed()) continue;
+
+      // Find nearest enemy in range
+      let nearest: Unit | null = null;
+      let nearestDist = TOWER_RANGE;
+      for (const enemy of activeEnemies) {
+        const dist = Phaser.Math.Distance.Between(tower.x, tower.y, enemy.x, enemy.y);
+        if (dist < nearestDist) {
+          nearestDist = dist;
+          nearest = enemy;
+        }
+      }
+
+      if (nearest) {
+        // Deal damage
+        nearest.takeDamage(TOWER_DPS);
+
+        // Projectile visual (bullet from tower to enemy)
+        const bullet = this.add.circle(tower.x, tower.y - 20, 3, 0x22c55e, 1).setDepth(35);
+        this.tweens.add({
+          targets: bullet,
+          x: nearest.x,
+          y: nearest.y,
+          duration: 200,
+          ease: 'Power2',
+          onComplete: () => {
+            // Impact flash
+            const impact = this.add.circle(bullet.x, bullet.y, 5, 0x22c55e, 0.7).setDepth(35);
+            this.tweens.add({
+              targets: impact,
+              scaleX: 2,
+              scaleY: 2,
+              alpha: 0,
+              duration: 150,
+              onComplete: () => impact.destroy(),
+            });
+            bullet.destroy();
+          },
+        });
+
+        // Muzzle flash on tower
+        const muzzle = this.add.circle(tower.x, tower.y - 20, 6, 0xffffff, 0.6).setDepth(34);
+        this.tweens.add({
+          targets: muzzle,
+          scaleX: 2,
+          scaleY: 2,
+          alpha: 0,
+          duration: 100,
+          onComplete: () => muzzle.destroy(),
+        });
+
+        // Show damage number
+        FloatingText.showDamageNumber(this, nearest.x, nearest.y - 10, TOWER_DPS);
+      }
+    }
+  }
+
+  private drawTowerRanges() {
+    this.towerRangeGraphics.clear();
+    const TOWER_RANGE = 120;
+
+    for (const tower of this.towers) {
+      if (tower.isDestroyed()) continue;
+      // Subtle range circle
+      this.towerRangeGraphics.lineStyle(1, 0x22c55e, 0.08);
+      this.towerRangeGraphics.strokeCircle(tower.x, tower.y, TOWER_RANGE);
+      // Inner ring
+      this.towerRangeGraphics.lineStyle(0.5, 0x22c55e, 0.04);
+      this.towerRangeGraphics.strokeCircle(tower.x, tower.y, TOWER_RANGE * 0.7);
     }
   }
 
