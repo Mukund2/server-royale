@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { Unit } from '../entities/Unit';
 import { Tower } from '../entities/Tower';
 import { BudgetSystem } from './BudgetSystem';

@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { CardSystem } from '../systems/CardSystem';
 import { BudgetSystem } from '../systems/BudgetSystem';
 import { CardSprite } from './CardSprite';

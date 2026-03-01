@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { CardDef } from '../config/cards';
 
 export class CardSprite extends Phaser.GameObjects.Container {

@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { MELEE_RANGE } from '../config/constants';
 
 export type UnitSide = 'player' | 'enemy';

@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import { GAME_WIDTH } from '../config/constants';
 import { BudgetSystem } from '../systems/BudgetSystem';
 import { WaveSystem } from '../systems/WaveSystem';

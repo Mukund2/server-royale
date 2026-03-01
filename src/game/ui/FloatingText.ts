@@ -1,4 +1,4 @@
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 
 export class FloatingText {
   static show(scene: Phaser.Scene, x: number, y: number, text: string, color: string = '#ffffff', size: number = 14) {
