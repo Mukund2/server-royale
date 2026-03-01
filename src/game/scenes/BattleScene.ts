@@ -331,9 +331,22 @@ export class BattleScene extends Phaser.Scene {
           if (enemy.lane === clickLane) {
             enemy.lane = clickLane === 0 ? 1 : 0;
             this.tweens.add({ targets: enemy, x: targetX + Phaser.Math.Between(-30, 30), duration: 300 });
+            // Wind trail behind pushed enemies
+            const trail = this.add.circle(enemy.x, enemy.y, 3, 0x60a5fa, 0.5).setDepth(25);
+            this.tweens.add({
+              targets: trail,
+              x: targetX,
+              alpha: 0,
+              scaleX: 0.2,
+              scaleY: 0.2,
+              duration: 300,
+              onComplete: () => trail.destroy(),
+            });
           }
         }
-        FloatingText.show(this, x, y, 'LOAD BALANCED!', '#6666ff', 16);
+        FloatingText.showBigText(this, 'LOAD BALANCED!', '#60a5fa');
+        // Blue flash
+        this.cameras.main.flash(150, 96, 165, 250, false, undefined, this);
         break;
       }
       case 'overclock': {
@@ -341,10 +354,24 @@ export class BattleScene extends Phaser.Scene {
         for (const unit of units) {
           if (!unit.active) continue;
           unit.overclocked = true;
-          // Tint
           unit.setTint(0xffdd22);
+
+          // Individual overclock ring per unit
+          const ring = this.add.graphics().setDepth(25);
+          ring.lineStyle(2, 0xfbbf24, 0.6);
+          ring.strokeCircle(unit.x, unit.y, 5);
+          this.tweens.add({
+            targets: ring,
+            scaleX: 3,
+            scaleY: 3,
+            alpha: 0,
+            duration: 400,
+            onComplete: () => ring.destroy(),
+          });
         }
-        FloatingText.show(this, GAME_WIDTH / 2, 300, 'OVERCLOCK!', '#ffdd22', 20);
+        FloatingText.showBigText(this, 'OVERCLOCK!', '#ffdd22');
+        // Camera flash
+        this.cameras.main.flash(200, 255, 221, 0, false, undefined, this);
         this.time.delayedCall(card.spellDuration || 5000, () => {
           const u = this.playerUnits.getChildren() as Unit[];
           for (const unit of u) {
@@ -441,6 +468,27 @@ export class BattleScene extends Phaser.Scene {
     }
 
     FloatingText.show(this, x, y - 15, card.name, '#4ade80');
+
+    // Confetti burst (small colored squares flying out)
+    const confettiColors = [0xfbbf24, 0x4ade80, 0x60a5fa, 0xf472b6, 0xffffff];
+    for (let i = 0; i < 8; i++) {
+      const color = confettiColors[i % confettiColors.length];
+      const angle = (Math.PI * 2 / 8) * i + Math.random() * 0.3;
+      const dist = 25 + Math.random() * 20;
+      const confetti = this.add.rectangle(x, y, 4, 3, color, 0.9).setDepth(31);
+      confetti.setAngle(Math.random() * 360);
+      this.tweens.add({
+        targets: confetti,
+        x: x + Math.cos(angle) * dist,
+        y: y + Math.sin(angle) * dist - 15,
+        angle: confetti.angle + Phaser.Math.Between(-180, 180),
+        alpha: 0,
+        scaleX: 0.2,
+        scaleY: 0.2,
+        duration: 400 + Math.random() * 200,
+        onComplete: () => confetti.destroy(),
+      });
+    }
 
     // Camera shake
     this.cameras.main.shake(100, 0.004);

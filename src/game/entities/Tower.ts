@@ -111,6 +111,40 @@ export class Tower extends Phaser.GameObjects.Sprite {
     // Flash green
     this.setTint(0x44ff88);
     this.scene.time.delayedCall(200, () => this.clearTint());
+
+    // Rising green heal particles
+    for (let i = 0; i < 6; i++) {
+      const p = this.scene.add.circle(
+        this.x + Phaser.Math.Between(-15, 15),
+        this.y + Phaser.Math.Between(-5, 10),
+        Phaser.Math.Between(2, 4),
+        i % 2 === 0 ? 0x22c55e : 0x4ade80,
+        0.7,
+      ).setDepth(20);
+      this.scene.tweens.add({
+        targets: p,
+        y: p.y - 30 - Math.random() * 15,
+        alpha: 0,
+        scaleX: 0.3,
+        scaleY: 0.3,
+        duration: 500 + Math.random() * 300,
+        delay: i * 50,
+        onComplete: () => p.destroy(),
+      });
+    }
+
+    // Green pulse ring
+    const ring = this.scene.add.graphics().setDepth(14);
+    ring.lineStyle(2, 0x22c55e, 0.5);
+    ring.strokeCircle(this.x, this.y, 10);
+    this.scene.tweens.add({
+      targets: ring,
+      scaleX: 3,
+      scaleY: 3,
+      alpha: 0,
+      duration: 600,
+      onComplete: () => ring.destroy(),
+    });
   }
 
   private updateHpBar() {

@@ -183,9 +183,10 @@ export class CardSprite extends Phaser.GameObjects.Container {
   }
 
   setSelected(selected: boolean) {
+    if (selected === this.isSelected) return;
     this.isSelected = selected;
     this.drawCard(selected);
-    // Pop animation
+    // Pop animation + sparkle
     if (selected) {
       this.scene.tweens.add({
         targets: this,
@@ -195,6 +196,26 @@ export class CardSprite extends Phaser.GameObjects.Container {
         duration: 100,
         ease: 'Back.easeOut',
       });
+
+      // Selection sparkles
+      for (let i = 0; i < 5; i++) {
+        const sparkle = this.scene.add.circle(
+          this.x + Phaser.Math.Between(-30, 30),
+          this.y + Phaser.Math.Between(-35, 25),
+          Phaser.Math.Between(1, 3),
+          i % 2 === 0 ? 0xfbbf24 : 0xffffff,
+          0.8,
+        ).setDepth(65);
+        this.scene.tweens.add({
+          targets: sparkle,
+          y: sparkle.y - 15,
+          alpha: 0,
+          scaleX: 0.1,
+          scaleY: 0.1,
+          duration: 300 + Math.random() * 200,
+          onComplete: () => sparkle.destroy(),
+        });
+      }
     } else {
       this.scene.tweens.add({
         targets: this,
