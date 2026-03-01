@@ -604,24 +604,41 @@ export class BattleScene extends Phaser.Scene {
     if (!this.isDeploying) return;
 
     this.deployIndicator.clear();
-    const inZone = pointer.y >= PLAYER_DEPLOY_MIN_Y && pointer.y <= PLAYER_DEPLOY_MAX_Y && pointer.y < 670;
+    const inZone = pointer.y >= PLAYER_DEPLOY_MIN_Y && pointer.y <= PLAYER_DEPLOY_MAX_Y && pointer.y < 660;
 
     if (inZone) {
-      // Valid deploy - green pulsing ring
-      this.deployIndicator.fillStyle(0x4ade80, 0.12);
-      this.deployIndicator.fillCircle(pointer.x, pointer.y, 22);
-      this.deployIndicator.lineStyle(2, 0x4ade80, 0.5);
-      this.deployIndicator.strokeCircle(pointer.x, pointer.y, 22);
-      // Inner crosshair
+      // Valid deploy zone — pulsing green circle with crosshair
+      // Outer glow
+      this.deployIndicator.fillStyle(0x4ade80, 0.06);
+      this.deployIndicator.fillCircle(pointer.x, pointer.y, 35);
+      // Middle ring
+      this.deployIndicator.lineStyle(2.5, 0x4ade80, 0.5);
+      this.deployIndicator.strokeCircle(pointer.x, pointer.y, 25);
+      // Inner ring
       this.deployIndicator.lineStyle(1, 0x4ade80, 0.3);
-      this.deployIndicator.lineBetween(pointer.x - 8, pointer.y, pointer.x + 8, pointer.y);
-      this.deployIndicator.lineBetween(pointer.x, pointer.y - 8, pointer.x, pointer.y + 8);
+      this.deployIndicator.strokeCircle(pointer.x, pointer.y, 15);
+      // Fill
+      this.deployIndicator.fillStyle(0x4ade80, 0.15);
+      this.deployIndicator.fillCircle(pointer.x, pointer.y, 25);
+      // Crosshair
+      this.deployIndicator.lineStyle(1.5, 0x4ade80, 0.4);
+      this.deployIndicator.lineBetween(pointer.x - 12, pointer.y, pointer.x - 5, pointer.y);
+      this.deployIndicator.lineBetween(pointer.x + 5, pointer.y, pointer.x + 12, pointer.y);
+      this.deployIndicator.lineBetween(pointer.x, pointer.y - 12, pointer.x, pointer.y - 5);
+      this.deployIndicator.lineBetween(pointer.x, pointer.y + 5, pointer.x, pointer.y + 12);
+      // Center dot
+      this.deployIndicator.fillStyle(0x4ade80, 0.6);
+      this.deployIndicator.fillCircle(pointer.x, pointer.y, 3);
     } else {
-      // Invalid - red X
-      this.deployIndicator.lineStyle(2, 0xef4444, 0.5);
-      this.deployIndicator.strokeCircle(pointer.x, pointer.y, 18);
-      this.deployIndicator.lineBetween(pointer.x - 6, pointer.y - 6, pointer.x + 6, pointer.y + 6);
-      this.deployIndicator.lineBetween(pointer.x + 6, pointer.y - 6, pointer.x - 6, pointer.y + 6);
+      // Invalid zone — red X with circle
+      this.deployIndicator.lineStyle(2.5, 0xef4444, 0.5);
+      this.deployIndicator.strokeCircle(pointer.x, pointer.y, 20);
+      this.deployIndicator.fillStyle(0xef4444, 0.08);
+      this.deployIndicator.fillCircle(pointer.x, pointer.y, 20);
+      // X marks
+      this.deployIndicator.lineStyle(2.5, 0xef4444, 0.6);
+      this.deployIndicator.lineBetween(pointer.x - 8, pointer.y - 8, pointer.x + 8, pointer.y + 8);
+      this.deployIndicator.lineBetween(pointer.x + 8, pointer.y - 8, pointer.x - 8, pointer.y + 8);
     }
   }
 
