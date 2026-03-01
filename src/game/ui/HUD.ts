@@ -1,5 +1,5 @@
 import * as Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT } from '../config/constants';
+import { GAME_WIDTH, GAME_HEIGHT, WAVE_INTERVAL } from '../config/constants';
 import { BudgetSystem } from '../systems/BudgetSystem';
 import { WaveSystem } from '../systems/WaveSystem';
 
@@ -12,6 +12,7 @@ export class HUD {
   private unitHpGraphics: Phaser.GameObjects.Graphics;
   private elixirDrops: Phaser.GameObjects.Graphics;
   private elixirLabel: Phaser.GameObjects.Text;
+  private waveTimerText: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -49,6 +50,15 @@ export class HUD {
       strokeThickness: 3,
     }).setOrigin(0.5, 0.5).setDepth(56);
 
+    // Wave timer countdown (small, below wave banner)
+    this.waveTimerText = scene.add.text(GAME_WIDTH / 2, 40, '', {
+      fontSize: '10px',
+      color: '#94a3b8',
+      fontFamily: '"Trebuchet MS", sans-serif',
+      stroke: '#000000',
+      strokeThickness: 2,
+    }).setOrigin(0.5).setDepth(51).setAlpha(0.7);
+
     // HP bar renderer for units
     this.unitHpGraphics = scene.add.graphics().setDepth(45);
   }
@@ -56,6 +66,17 @@ export class HUD {
   update(budget: BudgetSystem, wave: WaveSystem) {
     this.drawWaveBanner(wave.wave);
     this.drawBudgetBar(budget);
+
+    // Wave countdown timer
+    const remaining = Math.max(0, WAVE_INTERVAL - wave.waveTimer);
+    const secs = Math.ceil(remaining / 1000);
+    if (secs > 0 && secs <= 15) {
+      this.waveTimerText.setText(`Next wave: ${secs}s`);
+      this.waveTimerText.setAlpha(secs <= 5 ? 1 : 0.6);
+      this.waveTimerText.setColor(secs <= 5 ? '#ef4444' : '#94a3b8');
+    } else {
+      this.waveTimerText.setText('');
+    }
   }
 
   private drawWaveBanner(waveNum: number) {
